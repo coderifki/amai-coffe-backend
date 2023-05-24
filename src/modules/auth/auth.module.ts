@@ -7,6 +7,7 @@ import { LoginEmployeeCommandHandler } from './applications/command/employee/log
 import { USER_REPOSITORY } from './applications/ports/user.repository';
 import { UserMongoAdapter } from './infrastructure/adapter/user.mongo.adapter';
 import { AuthController } from './infrastructure/delivery/auth.employee.controller';
+import { JwtStragegy } from './strategy/jwt.stategy';
 
 const apiControllers = [AuthController];
 
@@ -42,7 +43,7 @@ const commands: Provider[] = [
     ...modules,
   ],
   controllers: [...apiControllers],
-  providers: [...commands, ...repositories],
+  providers: [...commands, ...repositories, JwtStragegy],
   exports: [
     {
       provide: USER_REPOSITORY,
