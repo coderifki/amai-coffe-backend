@@ -21,7 +21,7 @@ model User {
   phone    String @unique
   email    String @unique
   password String
-  role    Role   @default(CASHIER)
+  role     Role    @default(CASHIER)
   employee     Employee?
   transactions Transaction[]
 
@@ -45,25 +45,37 @@ enum Role {
   CASHIER
 }
 
+model CategoryProduct {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId()
+  name               String    // Category Product Name: makanan & minuman
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+  Product            Product[]
+
+  @@map("category_product")
+}
+
 model Product {
-  id                 String               @id @default(auto()) @map("_id") @db.ObjectId()
-  name               String // teh
-  price              Float // harga 5000
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  Variants   ProductVariant[]
+  id                 String          @id @default(auto()) @map("_id") @db.ObjectId()
+  name               String          // teh 
+  price              Float           // harga 5000
+  cat_product_id     String          @db.ObjectId() // category product id si makanan/minuman
+  cat_product_detail CategoryProduct @relation(fields: [cat_product_id],references: [id] )
+  created_at         DateTime        @default(now())
+  updated_at         DateTime        @updatedAt
+  Variants           ProductVariant[]
   TransactionDetails TransactionDetails[] // this product is existing on this certain transaction
 
   @@map("product")
 }
 
 model ProductVariant {
-  id                 String               @id @default(auto()) @map("_id") @db.ObjectId()
-  name               String // dingin
-  product_id    String @db.ObjectId() // product id si teh
-  product_detail Product @relation(fields: [product_id],references: [id] )
-  aritmatics_op     AritmaticsOp @default(NONE) // ADD
-  factor            Float @default(0) // 2000
+  id                 String       @id @default(auto()) @map("_id") @db.ObjectId()
+  name               String       // dingin
+  product_id         String       @db.ObjectId() // product id si teh
+  product_detail     Product      @relation(fields: [product_id],references: [id] )
+  aritmatics_op      AritmaticsOp @default(NONE) // ADD
+  factor             Float        @default(0) // 2000
 
   @@map("product_variant")
 }

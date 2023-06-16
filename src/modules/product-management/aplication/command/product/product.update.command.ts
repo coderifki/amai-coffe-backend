@@ -5,20 +5,21 @@ import {
   PRODUCT_REPOSITORY,
 } from '../../ports/product.repository';
 
-export class ProductCreateCommand {
+export class ProductUpdateCommand {
+  id: string;
   name: string;
   price: number;
 }
 
-@CommandHandler(ProductCreateCommand)
-export class ProductCreateCommandHandler
-  implements ICommandHandler<ProductCreateCommand>
+@CommandHandler(ProductUpdateCommand)
+export class ProductUpdateCommandHandler
+  implements ICommandHandler<ProductUpdateCommand>
 {
   constructor(
     @Inject(PRODUCT_REPOSITORY)
     private readonly productRepo: ProductRepository,
   ) {}
-  async execute(command: ProductCreateCommand) {
-    return await this.productRepo.createProduct(command);
+  async execute(command: ProductUpdateCommand) {
+    return await this.productRepo.updateProduct(command);
   }
 }

@@ -4,8 +4,16 @@ import { ProductCreateCommandHandler } from './aplication/command/product/produc
 import { PRODUCT_REPOSITORY } from './aplication/ports/product.repository';
 import { ProductMongoAdapter } from './infrastructure/adapter/product.mongo.adapter';
 import { ProductController } from './infrastructure/delivery/product.controller';
+import { ProductUpdateCommandHandler } from './aplication/command/product/product.update.command';
+import { ProductDeleteCommandHandler } from './aplication/command/product/product.delete.command';
+import { ProductFindManyQueryHandler } from './aplication/query/product.find.many.query';
+import { ProductFindByIdQueryHandler } from './aplication/query/product.find.by.id.query';
 
-const handlers = [ProductCreateCommandHandler];
+const handlers = [
+  ProductCreateCommandHandler,
+  ProductUpdateCommandHandler,
+  ProductDeleteCommandHandler,
+];
 const repositories: Provider[] = [
   {
     provide: PRODUCT_REPOSITORY,
@@ -13,9 +21,14 @@ const repositories: Provider[] = [
   },
 ];
 
+const queryHandlers = [
+  ProductFindManyQueryHandler,
+  ProductFindByIdQueryHandler,
+];
+
 @Module({
   controllers: [ProductController],
-  providers: [...handlers, ...repositories],
+  providers: [...handlers, ...repositories, ...queryHandlers],
   imports: [CqrsModule],
 })
 export class ProductModule {}
