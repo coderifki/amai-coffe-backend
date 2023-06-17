@@ -15,5 +15,5 @@ export class BaseFilterQuery {
   })
   @IsNumber()
   @Type(() => Number)
-  page: number = 20;
+  page: number = 1;
 }

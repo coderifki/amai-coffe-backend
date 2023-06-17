@@ -20,11 +20,11 @@ export interface DeleteProductProps {
   id: string;
 }
 
-// export interface ProductNotFoundException {
-//   name?: string;
-//   price?: string;
-//   excluded_id?: string;
-// }
+export interface CheckProductExistenceProps {
+  name?: string;
+  price?: string;
+  excluded_id?: string;
+}
 
 export interface ProductRepository {
   createProduct(props: CreateProductProps): Promise<ProductEntity>;
@@ -32,5 +32,4 @@ export interface ProductRepository {
   findManyProduct(): Promise<ProductEntity[]>;
   findProductById(query: FindProductByIdQuery): Promise<ProductEntity>;
   deleteProduct(props: DeleteProductProps): Promise<ProductEntity>;
-  // productAlreadyExistExeption(): Promise<ProductEntity>;
 }

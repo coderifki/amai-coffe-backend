@@ -13,14 +13,14 @@ import {
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
-import { ProductCreateCommand } from '../../aplication/command/product/product.create.command';
+import { ProductCreateCommand } from '../../aplication/command/product/cat.product.create.command';
 import { CreateProductDto } from '../dtos/requests/create.product.dto';
 import { JwtGuard } from '../../../auth/guards/jwt.auth.guard';
 import { RolesGuard } from '../../../auth/guards/roles.guard';
 import { HasRoles } from '../../../../core/decorators/has-roles.decorator';
-import { ProductUpdateCommand } from '../../aplication/command/product/product.update.command';
+import { ProductUpdateCommand } from '../../aplication/command/product/cat.product.update.command';
 import { UpdateProductDto } from '../dtos/requests/update.product.dto';
-import { ProductDeleteCommand } from '../../aplication/command/product/product.delete.command';
+import { ProductDeleteCommand } from '../../aplication/command/product/cat.product.delete.command';
 import { DeleteProductDto } from '../dtos/requests/delete.product.dto';
 import { BaseHttpResponseDto } from '../../../../core/helper/application/dtos/base.http.response.dto';
 import { ProductEntity } from '../../domain/product.entity';
@@ -150,7 +150,7 @@ export class ProductController {
     @Res() res: Response,
     @Query() query: ProductFindByIdQueryDto,
   ) {
-    // console.log(query);
+    console.log(query);
     const responseBuilder =
       Builder<BaseHttpResponseDto<ProductEntity, any>>(BaseHttpResponseDto);
     responseBuilder.statusCode(200);

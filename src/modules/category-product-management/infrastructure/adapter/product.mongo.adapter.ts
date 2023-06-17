@@ -5,45 +5,42 @@ import { PrismaService } from '../../../../shared/prisma/prisma.service';
 import {
   ProductRepository,
   CreateProductProps,
+  CheckProductExistenceProps,
   UpdateProductProps,
   DeleteProductProps,
   FindProductByIdQuery,
-} from '../../aplication/ports/product.repository';
+} from '../../aplication/ports/cat.product.repository';
 import { ProductEntity } from '../../domain/product.entity';
 import { ProductFindByIdQuery } from '../../aplication/query/product.find.by.id.query';
 import { ProductVariantEntity } from '../../../product-variant-management/domain/product.variant.entity';
-import { ConflictException, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class ProductMongoAdapter implements ProductRepository {
   constructor(private prismaService: PrismaService) {}
 
   async createProduct(props: CreateProductProps): Promise<ProductEntity> {
-    // try {
-    const result = await this.prismaService.product.create({
-      data: {
-        name: props.name,
-        price: props.price,
-      },
-    });
+    try {
+      const result = await this.prismaService.product.create({
+        data: {
+          name: props.name,
+          price: props.price,
+        },
+      });
 
-    if (!result) {
-      throw new ConflictException('Id had to be created');
+      const response = Builder<ProductEntity>(ProductEntity, {
+        ...result,
+      }).build();
+
+      return response;
+    } catch (e) {
+      console.log(e);
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === 'P2002') {
+          // throw new ProductAlreadyExistsException();
+        }
+      }
+      throw e;
     }
-    const response = Builder<ProductEntity>(ProductEntity, {
-      ...result,
-    }).build();
-
-    return response;
-    // } catch (e) {
-    //   console.log(e);
-    //   if (e instanceof Prisma.PrismaClientKnownRequestError) {
-    //     if (e.code === 'P2002') {
-    //       // throw new productAlreadyExistException();
-    //     }
-    //   }
-    //   throw e;
-    // }
   }
 
   async updateProduct(props: UpdateProductProps): Promise<ProductEntity> {
@@ -85,10 +82,10 @@ export class ProductMongoAdapter implements ProductRepository {
         id: query.id,
       },
     });
-
     if (!result) {
-      throw new NotFoundException('Product not found');
+      throw new Error('Product not found');
     }
+
     const productEntity = Builder<ProductEntity>(ProductEntity, {
       ...result,
     }).build();
@@ -102,10 +99,6 @@ export class ProductMongoAdapter implements ProductRepository {
         id: props.id,
       },
     });
-
-    if (!result) {
-      throw new NotFoundException('Product not found');
-    }
 
     const response = Builder<ProductEntity>(ProductEntity, {
       ...result,
