@@ -21,6 +21,7 @@ async function bootstrap() {
   // file upload limit
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
+  app.enableCors({ origin: 'http://localhost:3004', credentials: true });
 
   // add prefix 'api' before all endpoint except the root endpoint
   app.setGlobalPrefix('api', {

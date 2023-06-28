@@ -1,6 +1,6 @@
-import { ProductEntity } from '../../domain/product.entity';
+import { ProductEntity } from '../../domain/cat.product.entity';
 
-export const PRODUCT_REPOSITORY = 'PRODUCT_REPOSITORY';
+export const CATEGORY_PRODUCT_REPOSITORY = 'PRODUCT_REPOSITORY';
 
 export interface CreateProductProps {
   name?: string;
@@ -26,7 +26,7 @@ export interface CheckProductExistenceProps {
   excluded_id?: string;
 }
 
-export interface ProductRepository {
+export interface CategoryProductRepository {
   createProduct(props: CreateProductProps): Promise<ProductEntity>;
   updateProduct(props: UpdateProductProps): Promise<ProductEntity>;
   findManyProduct(): Promise<ProductEntity[]>;

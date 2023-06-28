@@ -24,6 +24,7 @@ export class ProductMongoAdapter implements ProductRepository {
       data: {
         name: props.name,
         price: props.price,
+        cat_product_id: props.cat_product_id,
       },
     });
 

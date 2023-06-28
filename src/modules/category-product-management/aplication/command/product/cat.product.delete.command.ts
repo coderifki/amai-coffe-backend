@@ -1,23 +1,23 @@
-import { Inject } from '@nestjs/common/decorators';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import {
-  ProductRepository,
-  PRODUCT_REPOSITORY,
-} from '../../ports/cat.product.repository';
+// import { Inject } from '@nestjs/common/decorators';
+// import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+// import {
+//   ProductRepository,
+//   PRODUCT_REPOSITORY,
+// } from '../../ports/cat.product.repository';
 
-export class ProductDeleteCommand {
-  id: string;
-}
+// export class CategoryProductDeleteCommand {
+//   id: string;
+// }
 
-@CommandHandler(ProductDeleteCommand)
-export class ProductDeleteCommandHandler
-  implements ICommandHandler<ProductDeleteCommand>
-{
-  constructor(
-    @Inject(PRODUCT_REPOSITORY)
-    private readonly productRepo: ProductRepository,
-  ) {}
-  async execute(command: ProductDeleteCommand) {
-    return await this.productRepo.deleteProduct(command);
-  }
-}
+// @CommandHandler(CategoryProductDeleteCommand)
+// export class CategoryProductDeleteCommandHandler
+//   implements ICommandHandler<CategoryProductDeleteCommand>
+// {
+//   constructor(
+//     @Inject(PRODUCT_REPOSITORY)
+//     private readonly catproductRepo: CategoryProductRepository,
+//   ) {}
+//   async execute(command: CategoryProductDeleteCommand) {
+//     return await this.catproductRepo.deleteProduct(command);
+//   }
+// }

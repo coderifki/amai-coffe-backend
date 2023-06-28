@@ -14,6 +14,7 @@ export class AuthController {
   @Post('employee/login')
   async login(@Res() res: Response, @Body() dto: BaseLoginRequestDto) {
     // map the incoming request into a command
+    // console.log('masuk login');
     const command = Builder<LoginEmployeeCommand>(LoginEmployeeCommand, {
       ...dto,
     }).build();

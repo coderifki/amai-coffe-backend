@@ -67,7 +67,7 @@ export class UserMongoAdapter implements UserRepository {
     }
   }
 
-  async findById() {
-    throw new Error('method not implemented');
-  }
+  // async findById() {
+  //   throw new Error('method not implemented');
+  // }
 }

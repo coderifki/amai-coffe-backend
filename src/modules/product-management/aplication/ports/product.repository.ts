@@ -5,6 +5,7 @@ export const PRODUCT_REPOSITORY = 'PRODUCT_REPOSITORY';
 export interface CreateProductProps {
   name?: string;
   price?: number;
+  cat_product_id?: string;
 }
 export interface UpdateProductProps {
   id: string;

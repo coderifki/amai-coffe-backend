@@ -22,10 +22,20 @@ Table employee {
   updated_at DateTime [not null]
 }
 
+Table category_product {
+  id String [pk]
+  name String [not null]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  Product product [not null]
+}
+
 Table product {
   id String [pk]
   name String [not null]
   price Float [not null]
+  cat_product_id String [not null]
+  cat_product_detail category_product [not null]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   Variants product_variant [not null]
@@ -72,6 +82,8 @@ Enum AritmaticsOp {
 }
 
 Ref: employee.user_id - user.id
+
+Ref: product.cat_product_id > category_product.id
 
 Ref: product_variant.product_id > product.id
 

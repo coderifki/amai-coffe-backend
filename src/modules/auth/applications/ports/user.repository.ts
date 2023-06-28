@@ -20,5 +20,5 @@ export interface UserRepository {
 
   checkExistence(props: CheckUserExistenceProps): Promise<UserEntity | null>;
 
-  findById(): Promise<any>;
+  // findById(): Promise<any>;
 }
