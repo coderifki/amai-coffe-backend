@@ -9,7 +9,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class FilterIdProductDto {
+export class FilterIdCatProductDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

@@ -1,23 +1,24 @@
-// import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-// import {
-//   PRODUCT_REPOSITORY,
-//   ProductRepository,
-// } from '../ports/cat.product.repository';
-// import { Inject } from '@nestjs/common';
-// import { ProductEntity } from '../../domain/cat.product.entity';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-// export class ProductFindManyQuery {}
+import { Inject } from '@nestjs/common';
+import {
+  CATEGORY_PRODUCT_REPOSITORY,
+  CategoryProductRepository,
+} from '../ports/cat.product.repository';
+import { CatProductEntity } from '../../domain/cat.product.entity';
 
-// @QueryHandler(ProductFindManyQuery)
-// export class ProductFindManyQueryHandler
-//   implements IQueryHandler<ProductFindManyQueryHandler>
-// {
-//   constructor(
-//     @Inject(PRODUCT_REPOSITORY)
-//     private readonly productRepository: ProductRepository,
-//   ) {}
+export class CatProductFindManyQuery {}
 
-//   async execute(query: ProductFindManyQuery): Promise<ProductEntity[]> {
-//     return await this.productRepository.findManyProduct();
-//   }
-// }
+@QueryHandler(CatProductFindManyQuery)
+export class CatProductFindManyQueryHandler
+  implements IQueryHandler<CatProductFindManyQueryHandler>
+{
+  constructor(
+    @Inject(CATEGORY_PRODUCT_REPOSITORY)
+    private readonly catproductRepository: CategoryProductRepository,
+  ) {}
+
+  async execute(query: CatProductFindManyQuery): Promise<CatProductEntity[]> {
+    return await this.catproductRepository.findManyCatProduct();
+  }
+}

@@ -1,35 +1,32 @@
-import { ProductEntity } from '../../domain/cat.product.entity';
+import { CatProductEntity } from '../../domain/cat.product.entity';
 
-export const CATEGORY_PRODUCT_REPOSITORY = 'PRODUCT_REPOSITORY';
+export const CATEGORY_PRODUCT_REPOSITORY = 'CATEGORY_PRODUCT_REPOSITORY';
 
-export interface CreateProductProps {
+export interface CreateCatProductProps {
   name?: string;
-  price?: number;
 }
-export interface UpdateProductProps {
+export interface UpdateCatProductProps {
   id: string;
   name?: string;
-  price?: number;
 }
 
-export interface FindProductByIdQuery {
+export interface FindCatProductByIdQuery {
   id: string;
 }
 
-export interface DeleteProductProps {
+export interface DeleteCatProductProps {
   id: string;
 }
 
 export interface CheckProductExistenceProps {
   name?: string;
-  price?: string;
   excluded_id?: string;
 }
 
 export interface CategoryProductRepository {
-  createProduct(props: CreateProductProps): Promise<ProductEntity>;
-  updateProduct(props: UpdateProductProps): Promise<ProductEntity>;
-  findManyProduct(): Promise<ProductEntity[]>;
-  findProductById(query: FindProductByIdQuery): Promise<ProductEntity>;
-  deleteProduct(props: DeleteProductProps): Promise<ProductEntity>;
+  createCatProduct(props: CreateCatProductProps): Promise<CatProductEntity>;
+  updateCatProduct(props: UpdateCatProductProps): Promise<CatProductEntity>;
+  findManyCatProduct(): Promise<CatProductEntity[]>;
+  findCatProductById(query: FindCatProductByIdQuery): Promise<CatProductEntity>;
+  deleteCatProduct(props: DeleteCatProductProps): Promise<CatProductEntity>;
 }

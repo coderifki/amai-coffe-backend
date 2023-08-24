@@ -1,26 +1,26 @@
-// import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-// import { ProductEntity } from '../../domain/cat.product.entity';
-// import {
-//   PRODUCT_REPOSITORY,
-//   ProductRepository,
-// } from '../ports/cat.product.repository';
-// import { Inject } from '@nestjs/common';
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 
-// export class ProductFindByIdQuery {
-//   id: string;
-// }
+import { Inject } from '@nestjs/common';
+import {
+  CATEGORY_PRODUCT_REPOSITORY,
+  CategoryProductRepository,
+} from '../ports/cat.product.repository';
 
-// @QueryHandler(ProductFindByIdQuery)
-// export class ProductFindByIdQueryHandler
-//   implements IQueryHandler<ProductFindByIdQuery>
-// {
-//   constructor(
-//     @Inject(PRODUCT_REPOSITORY)
-//     private readonly productRepository: ProductRepository,
-//   ) {}
+export class CatProductFindByIdQuery {
+  id: string;
+}
 
-//   async execute(query: ProductFindByIdQuery) {
-//     // console.log(query);
-//     return await this.productRepository.findProductById(query);
-//   }
-// }
+@QueryHandler(CatProductFindByIdQuery)
+export class CatProductFindByIdQueryHandler
+  implements IQueryHandler<CatProductFindByIdQuery>
+{
+  constructor(
+    @Inject(CATEGORY_PRODUCT_REPOSITORY)
+    private readonly catproductRepository: CategoryProductRepository,
+  ) {}
+
+  async execute(query: CatProductFindByIdQuery) {
+    // console.log(query);
+    return await this.catproductRepository.findCatProductById(query);
+  }
+}

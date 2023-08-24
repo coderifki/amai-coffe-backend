@@ -1,7 +1,6 @@
-import { ProductVariant, TransactionDetails } from '@prisma/client';
-export class ProductEntity {
+import { Product } from '@prisma/client';
+export class CatProductEntity {
   id: string;
-  category_name: string;
-  Variants?: ProductVariant[];
-  transactions?: TransactionDetails[];
+  name: string;
+  Products?: Product[];
 }

@@ -27,7 +27,8 @@ Table category_product {
   name String [not null]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
-  Product product [not null]
+  Products product [not null]
+  TransactionDetails transaction_details [not null]
 }
 
 Table product {
@@ -64,6 +65,8 @@ Table transaction_details {
   id String [pk]
   transaction_id String [not null]
   transaction_info transaction [not null]
+  cat_product_id String [not null]
+  cat_product_detail category_product [not null]
   product_id String [not null]
   product_info product [not null]
 }
@@ -90,5 +93,7 @@ Ref: product_variant.product_id > product.id
 Ref: transaction.cashier_id > user.id
 
 Ref: transaction_details.transaction_id > transaction.id
+
+Ref: transaction_details.cat_product_id > category_product.id
 
 Ref: transaction_details.product_id > product.id

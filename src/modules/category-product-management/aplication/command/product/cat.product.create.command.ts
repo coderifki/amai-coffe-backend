@@ -1,24 +1,23 @@
-// import { Inject } from '@nestjs/common/decorators';
-// import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-// import {
-//   ProductRepository,
-//   PRODUCT_REPOSITORY,
-// } from '../../ports/cat.product.repository';
+import { Inject } from '@nestjs/common/decorators';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import {
+  CATEGORY_PRODUCT_REPOSITORY,
+  CategoryProductRepository,
+} from '../../ports/cat.product.repository';
 
-// export class ProductCreateCommand {
-//   name: string;
-//   price: number;
-// }
+export class CatProductCreateCommand {
+  name: string;
+}
 
-// @CommandHandler(ProductCreateCommand)
-// export class ProductCreateCommandHandler
-//   implements ICommandHandler<ProductCreateCommand>
-// {
-//   constructor(
-//     @Inject(PRODUCT_REPOSITORY)
-//     private readonly productRepo: ProductRepository,
-//   ) {}
-//   async execute(command: ProductCreateCommand) {
-//     return await this.productRepo.createProduct(command);
-//   }
-// }
+@CommandHandler(CatProductCreateCommand)
+export class CatProductCreateCommandHandler
+  implements ICommandHandler<CatProductCreateCommand>
+{
+  constructor(
+    @Inject(CATEGORY_PRODUCT_REPOSITORY)
+    private readonly catproductRepo: CategoryProductRepository,
+  ) {}
+  async execute(command: CatProductCreateCommand) {
+    return await this.catproductRepo.createCatProduct(command);
+  }
+}

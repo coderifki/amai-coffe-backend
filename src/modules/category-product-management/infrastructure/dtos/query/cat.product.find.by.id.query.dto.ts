@@ -1,3 +1,3 @@
-export class ProductFindByIdQueryDto {
+export class CatProductFindByIdQueryDto {
   id: string;
 }

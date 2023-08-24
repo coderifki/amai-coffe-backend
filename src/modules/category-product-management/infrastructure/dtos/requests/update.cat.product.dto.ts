@@ -9,7 +9,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class UpdateProductDto {
+export class UpdateCatProductDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -20,10 +20,4 @@ export class UpdateProductDto {
   @IsString()
   @IsNotEmpty()
   name: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber({}, {})
-  @Min(1)
-  price: number;
 }

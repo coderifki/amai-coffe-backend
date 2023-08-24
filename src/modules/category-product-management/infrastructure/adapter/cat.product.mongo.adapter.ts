@@ -1,109 +1,114 @@
-// import { Injectable } from '@nestjs/common/decorators';
-// import { Prisma } from '@prisma/client';
-// import { Builder } from 'builder-pattern';
-// import { PrismaService } from '../../../../shared/prisma/prisma.service';
-// import {
-//   ProductRepository,
-//   CreateProductProps,
-//   CheckProductExistenceProps,
-//   UpdateProductProps,
-//   DeleteProductProps,
-//   FindProductByIdQuery,
-// } from '../../aplication/ports/cat.product.repository';
-// import { ProductEntity } from '../../domain/cat.product.entity';
-// import { ProductFindByIdQuery } from '../../aplication/query/cat.product.find.by.id.query';
-// import { ProductVariantEntity } from '../../../product-variant-management/domain/product.variant.entity';
+import { Injectable } from '@nestjs/common/decorators';
+import { Prisma } from '@prisma/client';
+import { Builder } from 'builder-pattern';
+import { PrismaService } from '../../../../shared/prisma/prisma.service';
+import {
+  CategoryProductRepository,
+  CreateCatProductProps,
+  DeleteCatProductProps,
+  FindCatProductByIdQuery,
+  UpdateCatProductProps,
+} from '../../aplication/ports/cat.product.repository';
+import { CatProductEntity } from '../../domain/cat.product.entity';
 
-// @Injectable()
-// export class ProductMongoAdapter implements ProductRepository {
-//   constructor(private prismaService: PrismaService) {}
+@Injectable()
+export class CatProductMongoAdapter implements CategoryProductRepository {
+  constructor(private prismaService: PrismaService) {}
 
-//   async createProduct(props: CreateProductProps): Promise<ProductEntity> {
-//     try {
-//       const result = await this.prismaService.product.create({
-//         data: {
-//           name: props.name,
-//           price: props.price,
-//         },
-//       });
+  async createCatProduct(
+    props: CreateCatProductProps,
+  ): Promise<CatProductEntity> {
+    // console.log(props);
 
-//       const response = Builder<ProductEntity>(ProductEntity, {
-//         ...result,
-//       }).build();
+    try {
+      const result = await this.prismaService.categoryProduct.create({
+        data: {
+          name: props.name,
+        },
+      });
 
-//       return response;
-//     } catch (e) {
-//       console.log(e);
-//       if (e instanceof Prisma.PrismaClientKnownRequestError) {
-//         if (e.code === 'P2002') {
-//           // throw new ProductAlreadyExistsException();
-//         }
-//       }
-//       throw e;
-//     }
-//   }
+      const response = Builder<CatProductEntity>(CatProductEntity, {
+        ...result,
+      }).build();
 
-//   async updateProduct(props: UpdateProductProps): Promise<ProductEntity> {
-//     // console.log(props);
-//     const result = await this.prismaService.product.update({
-//       where: {
-//         id: props.id,
-//       },
+      return response;
+    } catch (e) {
+      //   console.log(e);
+      //   if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      //     if (e.code === 'P2002') {
+      //       // throw new ProductAlreadyExistsException();
+      //     }
+      //   }
+      //   throw e;
+      // }
+    }
+  }
+  async updateCatProduct(
+    props: UpdateCatProductProps,
+  ): Promise<CatProductEntity> {
+    // console.log(props);
+    const result = await this.prismaService.categoryProduct.update({
+      where: {
+        id: props.id,
+      },
 
-//       data: {
-//         name: props.name,
-//         price: props.price,
-//       },
-//     });
+      data: {
+        name: props.name,
+      },
+    });
 
-//     const response = Builder<ProductEntity>(ProductEntity, {
-//       ...result,
-//     }).build();
+    const response = Builder<CatProductEntity>(CatProductEntity, {
+      ...result,
+    }).build();
 
-//     return response;
-//   }
+    return response;
+  }
 
-//   async findManyProduct(): Promise<ProductEntity[]> {
-//     const results = await this.prismaService.product.findMany();
+  async findManyCatProduct(): Promise<CatProductEntity[]> {
+    const results = await this.prismaService.categoryProduct.findMany();
 
-//     const response = results.map((result) =>
-//       Builder<ProductEntity>(ProductEntity, {
-//         ...result,
-//       }).build(),
-//     );
+    const response = results.map((result) =>
+      Builder<CatProductEntity>(CatProductEntity, {
+        ...result,
+      }).build(),
+    );
 
-//     return response;
-//   }
+    return response;
+  }
 
-//   async findProductById(query: FindProductByIdQuery): Promise<ProductEntity> {
-//     // console.log(query.id);
-//     const result = await this.prismaService.product.findUnique({
-//       where: {
-//         id: query.id,
-//       },
-//     });
-//     if (!result) {
-//       throw new Error('Product not found');
-//     }
+  async findCatProductById(
+    query: FindCatProductByIdQuery,
+  ): Promise<CatProductEntity> {
+    // console.log(query.id);
+    const result = await this.prismaService.categoryProduct.findUnique({
+      where: {
+        id: query.id,
+      },
+    });
+    if (!result) {
+      throw new Error('Product not found');
+    }
 
-//     const productEntity = Builder<ProductEntity>(ProductEntity, {
-//       ...result,
-//     }).build();
+    const productEntity = Builder<CatProductEntity>(CatProductEntity, {
+      ...result,
+    }).build();
 
-//     return productEntity;
-//   }
+    return productEntity;
+  }
 
-//   async deleteProduct(props: DeleteProductProps): Promise<ProductEntity> {
-//     const result = await this.prismaService.product.delete({
-//       where: {
-//         id: props.id,
-//       },
-//     });
+  async deleteCatProduct(
+    props: DeleteCatProductProps,
+  ): Promise<CatProductEntity> {
+    const result = await this.prismaService.categoryProduct.delete({
+      where: {
+        id: props.id,
+      },
+    });
 
-//     const response = Builder<ProductEntity>(ProductEntity, {
-//       ...result,
-//     }).build();
+    const response = Builder<CatProductEntity>(CatProductEntity, {
+      ...result,
+    }).build();
 
-//     return response;
-//   }
-// }
+    return response;
+  }
+}

@@ -50,7 +50,9 @@ model CategoryProduct {
   name               String    // Category Product Name: makanan & minuman
   created_at         DateTime  @default(now())
   updated_at         DateTime  @updatedAt
-  Product            Product[]
+  Products            Product[]
+  TransactionDetails TransactionDetails[] // this product is existing on this certain transaction
+
 
   @@map("category_product")
 }
@@ -104,6 +106,8 @@ model TransactionDetails {
   id               String      @id @default(auto()) @map("_id") @db.ObjectId()
   transaction_id   String      @db.ObjectId()
   transaction_info Transaction @relation(fields: [transaction_id], references: [id])
+  cat_product_id   String @db.ObjectId()
+  cat_product_detail CategoryProduct @relation(fields: [cat_product_id], references: [id] )
   product_id       String      @db.ObjectId()
   product_info     Product     @relation(fields: [product_id], references: [id])
 

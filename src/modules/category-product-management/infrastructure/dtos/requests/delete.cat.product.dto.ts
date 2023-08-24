@@ -7,7 +7,7 @@ import {
   IsMongoId,
 } from 'class-validator';
 
-export class DeleteProductDto {
+export class DeleteCatProductDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

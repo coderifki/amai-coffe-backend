@@ -21,6 +21,7 @@ export class ProductMongoAdapter implements ProductRepository {
   async createProduct(props: CreateProductProps): Promise<ProductEntity> {
     // try {
     const result = await this.prismaService.product.create({
+      include: { cat_product_detail: true },
       data: {
         name: props.name,
         price: props.price,
@@ -36,20 +37,21 @@ export class ProductMongoAdapter implements ProductRepository {
     }).build();
 
     return response;
-    // } catch (e) {
-    //   console.log(e);
-    //   if (e instanceof Prisma.PrismaClientKnownRequestError) {
-    //     if (e.code === 'P2002') {
-    //       // throw new productAlreadyExistException();
-    //     }
-    //   }
-    //   throw e;
-    // }
+  }
+  catch(e) {
+    console.log(e);
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === 'P2002') {
+        // throw new productAlreadyExistException();
+      }
+    }
+    throw e;
   }
 
   async updateProduct(props: UpdateProductProps): Promise<ProductEntity> {
     // console.log(props);
     const result = await this.prismaService.product.update({
+      include: { cat_product_detail: true },
       where: {
         id: props.id,
       },
@@ -68,7 +70,11 @@ export class ProductMongoAdapter implements ProductRepository {
   }
 
   async findManyProduct(): Promise<ProductEntity[]> {
-    const results = await this.prismaService.product.findMany();
+    const results = await this.prismaService.product.findMany({
+      include: {
+        cat_product_detail: true, // this is relation for categoryProduct
+      },
+    });
 
     const response = results.map((result) =>
       Builder<ProductEntity>(ProductEntity, {
@@ -82,6 +88,7 @@ export class ProductMongoAdapter implements ProductRepository {
   async findProductById(query: FindProductByIdQuery): Promise<ProductEntity> {
     // console.log(query.id);
     const result = await this.prismaService.product.findUnique({
+      include: { cat_product_detail: true },
       where: {
         id: query.id,
       },
