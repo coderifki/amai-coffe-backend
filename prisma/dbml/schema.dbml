@@ -28,28 +28,18 @@ Table category_product {
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   Products product [not null]
-  TransactionDetails transaction_details [not null]
 }
 
 Table product {
   id String [pk]
   name String [not null]
   price Float [not null]
-  cat_product_id String [not null]
-  cat_product_detail category_product [not null]
+  images String
+  cat_product_id String
+  cat_product_detail category_product
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
-  Variants product_variant [not null]
   TransactionDetails transaction_details [not null]
-}
-
-Table product_variant {
-  id String [pk]
-  name String [not null]
-  product_id String [not null]
-  product_detail product [not null]
-  aritmatics_op AritmaticsOp [not null, default: 'NONE']
-  factor Float [not null, default: 0]
 }
 
 Table transaction {
@@ -58,17 +48,23 @@ Table transaction {
   cashier_info user [not null]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
+  name_customer String [not null]
+  total_transactions Float [not null]
+  change Float [not null]
+  pay Float [not null]
   transaction_details transaction_details [not null]
 }
 
 Table transaction_details {
   id String [pk]
   transaction_id String [not null]
+  product_id String
+  product_info product
+  name String [not null]
+  price Float [not null]
+  image String
+  category String [not null]
   transaction_info transaction [not null]
-  cat_product_id String [not null]
-  cat_product_detail category_product [not null]
-  product_id String [not null]
-  product_info product [not null]
 }
 
 Enum Role {
@@ -76,24 +72,12 @@ Enum Role {
   CASHIER
 }
 
-Enum AritmaticsOp {
-  ADD
-  SUBSTRACT
-  MULTIPLY
-  DEVIDE
-  NONE
-}
-
 Ref: employee.user_id - user.id
 
 Ref: product.cat_product_id > category_product.id
 
-Ref: product_variant.product_id > product.id
-
 Ref: transaction.cashier_id > user.id
 
-Ref: transaction_details.transaction_id > transaction.id
-
-Ref: transaction_details.cat_product_id > category_product.id
-
 Ref: transaction_details.product_id > product.id
+
+Ref: transaction_details.transaction_id > transaction.id

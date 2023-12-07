@@ -65,7 +65,7 @@ export class ProductController {
   }
 
   @UseGuards(JwtGuard, RolesGuard)
-  @HasRoles('ADMIN')
+  @HasRoles('ADMIN', 'CASHIER')
   @Put('/update')
   async updateProduct(@Body() payload: UpdateProductDto) {
     const command = Builder<ProductUpdateCommand>(ProductUpdateCommand, {

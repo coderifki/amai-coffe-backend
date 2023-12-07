@@ -99,16 +99,20 @@ export class CatProductMongoAdapter implements CategoryProductRepository {
   async deleteCatProduct(
     props: DeleteCatProductProps,
   ): Promise<CatProductEntity> {
-    const result = await this.prismaService.categoryProduct.delete({
-      where: {
-        id: props.id,
-      },
-    });
+    try {
+      const result = await this.prismaService.categoryProduct.delete({
+        where: {
+          id: props.id,
+        },
+      });
 
-    const response = Builder<CatProductEntity>(CatProductEntity, {
-      ...result,
-    }).build();
-
-    return response;
+      const response = Builder<CatProductEntity>(CatProductEntity, {
+        ...result,
+      }).build();
+      return response;
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
   }
 }

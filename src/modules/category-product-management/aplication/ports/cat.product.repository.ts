@@ -17,6 +17,9 @@ export interface FindCatProductByIdQuery {
 export interface DeleteCatProductProps {
   id: string;
 }
+// export interface CatProductDeleteByIdQuery {
+//   id: string;
+// }
 
 export interface CheckProductExistenceProps {
   name?: string;
@@ -29,4 +32,5 @@ export interface CategoryProductRepository {
   findManyCatProduct(): Promise<CatProductEntity[]>;
   findCatProductById(query: FindCatProductByIdQuery): Promise<CatProductEntity>;
   deleteCatProduct(props: DeleteCatProductProps): Promise<CatProductEntity>;
+  // deleteCatProduct(query: CatProductDeleteByIdQuery): Promise<CatProductEntity>;
 }

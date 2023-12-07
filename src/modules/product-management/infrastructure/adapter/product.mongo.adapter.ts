@@ -1,18 +1,16 @@
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators';
 import { Prisma } from '@prisma/client';
 import { Builder } from 'builder-pattern';
 import { PrismaService } from '../../../../shared/prisma/prisma.service';
 import {
-  ProductRepository,
   CreateProductProps,
-  UpdateProductProps,
   DeleteProductProps,
   FindProductByIdQuery,
+  ProductRepository,
+  UpdateProductProps,
 } from '../../aplication/ports/product.repository';
 import { ProductEntity } from '../../domain/product.entity';
-import { ProductFindByIdQuery } from '../../aplication/query/product.find.by.id.query';
-import { ProductVariantEntity } from '../../../product-variant-management/domain/product.variant.entity';
-import { ConflictException, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class ProductMongoAdapter implements ProductRepository {

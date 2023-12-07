@@ -1,35 +1,33 @@
 import {
-  Controller,
-  Post,
-  BadRequestException,
   Body,
-  UseGuards,
+  Controller,
+  Delete,
   Get,
   Param,
+  Post,
   Put,
-  Delete,
   Query,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
-import { CreateCatProductDto } from '../dtos/requests/create.cat.product.dto';
-import { JwtGuard } from '../../../auth/guards/jwt.auth.guard';
-import { RolesGuard } from '../../../auth/guards/roles.guard';
+import { Response } from 'express';
+import { CatProductDeleteCommand } from 'src/modules/category-product-management/aplication/command/product/cat.product.delete.command';
 import { HasRoles } from '../../../../core/decorators/has-roles.decorator';
 import { BaseHttpResponseDto } from '../../../../core/helper/application/dtos/base.http.response.dto';
 import { baseHttpResponseHelper } from '../../../../core/helper/base.response.helper';
-import { Response } from 'express';
+import { JwtGuard } from '../../../auth/guards/jwt.auth.guard';
+import { RolesGuard } from '../../../auth/guards/roles.guard';
 import { CatProductCreateCommand } from '../../aplication/command/product/cat.product.create.command';
-import { CatProductEntity } from '../../domain/cat.product.entity';
-import { DeleteCatProductDto } from '../dtos/requests/delete.cat.product.dto';
-import { UpdateCatProductDto } from '../dtos/requests/update.cat.product.dto';
 import { CatProductUpdateCommand } from '../../aplication/command/product/cat.product.update.command';
-import { CatProductDeleteCommand } from '../../aplication/command/product/cat.product.delete.command';
-import { CatProductFindManyQueryDto } from '../dtos/query/cat.product.find.many.query';
-import { CatProductFindByIdQueryDto } from '../dtos/query/cat.product.find.by.id.query.dto';
 import { CatProductFindByIdQuery } from '../../aplication/query/cat.product.find.by.id.query';
 import { CatProductFindManyQuery } from '../../aplication/query/cat.product.find.many.query';
+import { CatProductEntity } from '../../domain/cat.product.entity';
+import { CatProductFindByIdQueryDto } from '../dtos/query/cat.product.find.by.id.query.dto';
+import { CatProductFindManyQueryDto } from '../dtos/query/cat.product.find.many.query';
+import { CreateCatProductDto } from '../dtos/requests/create.cat.product.dto';
+import { UpdateCatProductDto } from '../dtos/requests/update.cat.product.dto';
 
 @Controller('categoryproducts')
 export class CategoryProductController {
@@ -51,7 +49,7 @@ export class CategoryProductController {
     }).build();
     const result = await this.commandBus.execute(command);
     // if (result) {
-    //   return { message: 'Product successfully added' };
+    //   return { message: 'Category Product successfully added' };
     // }
     const responseBuilder = Builder<BaseHttpResponseDto<any, any>>(
       BaseHttpResponseDto,
@@ -62,13 +60,13 @@ export class CategoryProductController {
       },
     );
     responseBuilder.statusCode(201);
-    responseBuilder.message('Product Successfully Added!');
+    responseBuilder.message('Category Product Successfully Added!');
     const response = responseBuilder.build();
     return baseHttpResponseHelper(res, response);
   }
 
   @UseGuards(JwtGuard, RolesGuard)
-  @HasRoles('ADMIN')
+  @HasRoles('ADMIN', 'CASHIER')
   @Put('/update')
   async updateCatProduct(@Body() payload: UpdateCatProductDto) {
     const command = Builder<CatProductUpdateCommand>(CatProductUpdateCommand, {
@@ -77,25 +75,95 @@ export class CategoryProductController {
 
     const result = await this.commandBus.execute(command);
     if (result) {
-      return { message: 'Product successfully update' };
+      return { message: 'Category Product successfully update' };
     }
   }
 
   @UseGuards(JwtGuard, RolesGuard)
-  @HasRoles('ADMIN')
+  @HasRoles('ADMIN', 'CASHIER')
   @Delete('/:id')
-  async deleteCatProduct(@Body() payload: DeleteCatProductDto) {
-    // console.log(payload);
-    const command = Builder<CatProductDeleteCommand>(CatProductDeleteCommand, {
-      ...payload,
-    }).build();
+  async deleteCatProduct(@Param('id') id: string) {
+    // console.log(id);
 
-    const result = await this.commandBus.execute(command);
-    if (result) {
-      return { message: 'Product deleted successfully' };
+    try {
+      const command = Builder<CatProductDeleteCommand>(
+        CatProductDeleteCommand,
+        {
+          id,
+        },
+      ).build();
+
+      const result = await this.commandBus.execute(command);
+      return result;
+    } catch (error) {
+      // console.trace(error);
+      throw error;
     }
+    // const command = Builder<CatProductDeleteCommand>(CatProductDeleteCommand, {
+    // ...payload,
+    // }).build();
+    // const result = await this.commandBus.execute(command);
+    // if (result) {
+    //   return { message: 'Product deleted successfully' };
+    // }
+
+    // const builder = Builder<CatProductFindByIdQuery>(CatProductFindByIdQuery, {
+    //   ...query,
+    // });
   }
 
+  // @Delete('/:id')
+  // async deleteCatProduct(
+  //   @Res() res: Response,
+  //   @Query() query: CatProductDeleteByIdQueryDto,
+  // ) {
+  //   console.log(query);
+  // const responseBuilder =
+  //   Builder<BaseHttpResponseDto<CatProductEntity, any>>(BaseHttpResponseDto);
+  // responseBuilder.statusCode(200);
+  // responseBuilder.message('Category Product Details');
+
+  // const builder = Builder<CatProductDeleteByIdQuery>(
+  //   CatProductDeleteByIdQuery,
+  //   {
+  //     ...query,
+  //   },
+  // );
+  // const result = await this.queryBus.execute(builder.build());
+  // // const result = await this.queryBus.execute(query);
+
+  // if (!result) {
+  //   return res.status(404).json({ message: 'Product not found' });
+  // }
+
+  // return res.status(200).json({ message: 'Product deleted successfully' });
+  // }
+
+  // @Get('find') // Endpoint for finding a product by ID
+  // async findCatProductById(
+  //   @Res() res: Response,
+  //   @Query() query: CatProductFindByIdQueryDto,
+  // ) {
+  //   console.log(query);
+  //   const responseBuilder =
+  //     Builder<BaseHttpResponseDto<CatProductEntity, any>>(BaseHttpResponseDto);
+  //   responseBuilder.statusCode(200);
+  //   responseBuilder.message('Category Product Details');
+
+  //   const builder = Builder<CatProductFindByIdQuery>(CatProductFindByIdQuery, {
+  //     ...query,
+  //   });
+
+  //   const result = await this.queryBus.execute(builder.build());
+
+  //   if (!result) {
+  //     responseBuilder.message('Product not found');
+  //     return baseHttpResponseHelper(res, responseBuilder.build());
+  //   }
+
+  //   responseBuilder.data(result);
+  //   return baseHttpResponseHelper(res, responseBuilder.build());
+  // }
   // @UseGuards(JwtGuard, RolesGuard)
   // @HasRoles('ADMIN')
   // @Get('')
@@ -159,7 +227,7 @@ export class CategoryProductController {
     const responseBuilder =
       Builder<BaseHttpResponseDto<CatProductEntity, any>>(BaseHttpResponseDto);
     responseBuilder.statusCode(200);
-    responseBuilder.message('Product Details');
+    responseBuilder.message('Category Product Details');
 
     const builder = Builder<CatProductFindByIdQuery>(CatProductFindByIdQuery, {
       ...query,

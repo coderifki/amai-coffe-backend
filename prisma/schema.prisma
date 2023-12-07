@@ -50,9 +50,7 @@ model CategoryProduct {
   name               String    // Category Product Name: makanan & minuman
   created_at         DateTime  @default(now())
   updated_at         DateTime  @updatedAt
-  Products            Product[]
-  TransactionDetails TransactionDetails[] // this product is existing on this certain transaction
-
+  Products           Product[]
 
   @@map("category_product")
 }
@@ -61,41 +59,27 @@ model Product {
   id                 String          @id @default(auto()) @map("_id") @db.ObjectId()
   name               String          // teh 
   price              Float           // harga 5000
-  cat_product_id     String          @db.ObjectId() // category product id si makanan/minuman
-  cat_product_detail CategoryProduct @relation(fields: [cat_product_id],references: [id] )
+  images             String?
+  cat_product_id     String?          @db.ObjectId() // category product id si makanan/minuman
+  cat_product_detail CategoryProduct? @relation(fields: [cat_product_id],references: [id] )
   created_at         DateTime        @default(now())
   updated_at         DateTime        @updatedAt
-  Variants           ProductVariant[]
   TransactionDetails TransactionDetails[] // this product is existing on this certain transaction
 
   @@map("product")
 }
 
-model ProductVariant {
-  id                 String       @id @default(auto()) @map("_id") @db.ObjectId()
-  name               String       // dingin
-  product_id         String       @db.ObjectId() // product id si teh
-  product_detail     Product      @relation(fields: [product_id],references: [id] )
-  aritmatics_op      AritmaticsOp @default(NONE) // ADD
-  factor             Float        @default(0) // 2000
-
-  @@map("product_variant")
-}
-
-enum AritmaticsOp {
-    ADD
-    SUBSTRACT
-    MULTIPLY
-    DEVIDE
-    NONE
-}
 
 model Transaction {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId()
-  cashier_id   String   @unique @db.ObjectId()
-  cashier_info User     @relation(fields: [cashier_id], references: [id])
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId()
+  cashier_id         String   @unique @db.ObjectId()
+  cashier_info       User     @relation(fields: [cashier_id], references: [id])
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+  name_customer      String
+  total_transactions Float
+  change             Float
+  pay                Float
 
   transaction_details TransactionDetails[]
 
@@ -105,11 +89,14 @@ model Transaction {
 model TransactionDetails {
   id               String      @id @default(auto()) @map("_id") @db.ObjectId()
   transaction_id   String      @db.ObjectId()
+  product_id       String?     @db.ObjectId()
+  product_info     Product?    @relation(fields: [product_id], references: [id])
+  name             String
+  price            Float
+  image            String?
+  category         String 
+
   transaction_info Transaction @relation(fields: [transaction_id], references: [id])
-  cat_product_id   String @db.ObjectId()
-  cat_product_detail CategoryProduct @relation(fields: [cat_product_id], references: [id] )
-  product_id       String      @db.ObjectId()
-  product_info     Product     @relation(fields: [product_id], references: [id])
 
   @@map("transaction_details")
 }

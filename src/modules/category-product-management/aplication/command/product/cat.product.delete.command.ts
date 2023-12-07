@@ -18,6 +18,11 @@ export class CatProductDeleteCommandHandler
     private readonly catproductRepo: CategoryProductRepository,
   ) {}
   async execute(command: CatProductDeleteCommand) {
-    return await this.catproductRepo.deleteCatProduct(command);
+    try {
+      return await this.catproductRepo.deleteCatProduct(command);
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
   }
 }
