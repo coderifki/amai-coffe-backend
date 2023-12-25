@@ -3,10 +3,9 @@ import { TransactionDetails } from '@prisma/client';
 export class TransactionEntity {
   id: string;
   cashier_id: string;
-  cashier_info: number;
-  name_customer: String;
+  name_customer: string;
   total_transactions: number;
-  change: number;
   pay: number;
-  transaction_details?: TransactionDetails[];
+  payment_method_name: string;
+  transaction_details: TransactionDetails[];
 }

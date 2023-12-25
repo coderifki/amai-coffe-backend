@@ -49,8 +49,8 @@ Table transaction {
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
   name_customer String [not null]
+  payment_method_name String [not null]
   total_transactions Float [not null]
-  change Float [not null]
   pay Float [not null]
   transaction_details transaction_details [not null]
 }
@@ -60,6 +60,7 @@ Table transaction_details {
   transaction_id String [not null]
   product_id String
   product_info product
+  quantity Float [not null]
   name String [not null]
   price Float [not null]
   image String

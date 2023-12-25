@@ -77,8 +77,9 @@ model Transaction {
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
   name_customer      String
+  payment_method_name     String
   total_transactions Float
-  change             Float
+//   change             Float
   pay                Float
 
   transaction_details TransactionDetails[]
@@ -91,6 +92,7 @@ model TransactionDetails {
   transaction_id   String      @db.ObjectId()
   product_id       String?     @db.ObjectId()
   product_info     Product?    @relation(fields: [product_id], references: [id])
+  quantity         Float
   name             String
   price            Float
   image            String?
