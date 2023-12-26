@@ -22,11 +22,12 @@ export class TransactionMongoAdapter implements TransactionRepository {
       const result = await this.prismaService.transaction.create({
         include: { cashier_info: true },
         data: {
-          name_customer: props.name_customer,
-          pay: props.pay,
-          total_transactions: props.total_transactions,
           cashier_id: props.cashier_id,
+          name_customer: props.name_customer,
+          total_transactions: props.total_transactions,
+          pay: props.pay,
           payment_method_name: props.payment_method_name,
+
           // cat_transaction_id: props.cat_transaction_id,
         },
       });
@@ -48,6 +49,66 @@ export class TransactionMongoAdapter implements TransactionRepository {
       }
       throw e;
     }
+  }
+
+  // Fungsi untuk menambahkan jumlah transaksi
+  async increaseQuantity(
+    transactionId: string,
+    amount: number,
+  ): Promise<TransactionEntity> {
+    try {
+      const updatedTransaction = await this.prismaService.transaction.update({
+        where: { id: transactionId },
+        data: {
+          total_transactions: {
+            increment: amount,
+          },
+        },
+        include: { cashier_info: true }, // Sesuaikan dengan kebutuhan Anda
+      });
+
+      if (!updatedTransaction) {
+        throw new NotFoundException('Transaction not found');
+      }
+
+      const response = Builder<TransactionEntity>(TransactionEntity, {
+        ...updatedTransaction,
+      }).build();
+
+      return response;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to increase quantity');
+    }
+  }
+  // Fungsi untuk mengurangi jumlah transaksi
+  async decreaseQuantity(
+    transactionId: string,
+    amount: number,
+  ): Promise<TransactionEntity> {
+    const transaction = await this.prismaService.transaction.update({
+      where: { id: transactionId },
+      data: {
+        total_transactions: {
+          decrement: amount,
+        },
+      },
+      include: { cashier_info: true }, // Sesuaikan dengan kebutuhan Anda
+    });
+
+    if (!transaction) {
+      throw new NotFoundException('Transaction not found');
+    }
+
+    const response = Builder<TransactionEntity>(TransactionEntity, {
+      ...transaction,
+    }).build();
+
+    return response;
+  }
+  catch(error) {
+    console.error(error);
+    throw new Error('Failed to decrease quantity');
   }
 
   // async updateTransaction(

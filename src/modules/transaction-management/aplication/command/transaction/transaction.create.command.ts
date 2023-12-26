@@ -9,12 +9,12 @@ import {
 export class TransactionCreateCommand {
   // id: string;
   cashier_id: string;
-  cashier_info: number;
+  // cashier_info: number;
   name_customer: string;
   total_transactions: number;
   payment_method_name: string;
   pay: number;
-  transaction_details: TransactionDetails[];
+  // transaction_details: TransactionDetails[];
 }
 
 @CommandHandler(TransactionCreateCommand)

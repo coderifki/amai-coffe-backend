@@ -77,10 +77,10 @@ model Transaction {
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
   name_customer      String
-  payment_method_name     String
+  payment_method_name String
   total_transactions Float
-//   change             Float
   pay                Float
+//   change             Float
 
   transaction_details TransactionDetails[]
 
@@ -89,7 +89,6 @@ model Transaction {
 
 model TransactionDetails {
   id               String      @id @default(auto()) @map("_id") @db.ObjectId()
-  transaction_id   String      @db.ObjectId()
   product_id       String?     @db.ObjectId()
   product_info     Product?    @relation(fields: [product_id], references: [id])
   quantity         Float
@@ -98,6 +97,7 @@ model TransactionDetails {
   image            String?
   category         String 
 
+  transaction_id   String      @db.ObjectId()
   transaction_info Transaction @relation(fields: [transaction_id], references: [id])
 
   @@map("transaction_details")

@@ -8,9 +8,8 @@ export interface CreateTransactionProps {
   name_customer: string;
   total_transactions: number;
   pay: number;
-  status_payment: string;
   payment_method_name: string;
-  transaction_details?: TransactionDetails[];
+  // transaction_details?: TransactionDetails[];
 }
 
 // export interface UpdateTransactionProps {

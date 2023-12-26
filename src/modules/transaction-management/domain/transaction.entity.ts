@@ -7,5 +7,4 @@ export class TransactionEntity {
   total_transactions: number;
   pay: number;
   payment_method_name: string;
-  transaction_details: TransactionDetails[];
 }
