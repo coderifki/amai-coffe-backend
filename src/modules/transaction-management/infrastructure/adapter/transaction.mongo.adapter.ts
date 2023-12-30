@@ -6,6 +6,7 @@ import {
   CreateTransactionProps,
   DeleteTransactionProps,
   FindTransactionByIdQuery,
+  FindTransactionDetailsByIdQuery,
   TransactionRepository,
 } from 'src/modules/transaction-management/aplication/ports/transaction.repository';
 import { TransactionDetailEntity } from 'src/modules/transaction-management/domain/transaction.detail.entity';
@@ -193,11 +194,7 @@ export class TransactionMongoAdapter implements TransactionRepository {
   // }
 
   async findManyTransaction(): Promise<TransactionEntity[]> {
-    const results = await this.prismaService.transaction.findMany({
-      // include: {
-      //   cat_transaction_detail: true, // this is relation for categoryTransaction
-      // },
-    });
+    const results = await this.prismaService.transaction.findMany({});
 
     const response = results.map((result) =>
       Builder<TransactionEntity>(TransactionEntity, {
@@ -211,11 +208,11 @@ export class TransactionMongoAdapter implements TransactionRepository {
   // This function for find id detail transaction entities
   async findTransactionById(
     query: FindTransactionByIdQuery,
-  ): Promise<TransactionDetailEntity> {
+  ): Promise<TransactionEntity> {
     try {
       // console.log(query.id);
-      const result = await this.prismaService.transactionDetails.findUnique({
-        include: { transaction_info: true, product_info: true },
+      const result = await this.prismaService.transaction.findUnique({
+        include: { transaction_details: true, cashier_info: true },
         where: {
           id: query.id,
           // product_id: query.product_id,
@@ -231,12 +228,9 @@ export class TransactionMongoAdapter implements TransactionRepository {
       if (!result) {
         throw new NotFoundException('Transaction detail not found');
       }
-      const transactionDetailEntity = Builder<TransactionDetailEntity>(
-        TransactionDetailEntity,
-        {
-          ...result,
-        },
-      ).build();
+      const transactionEntity = Builder<TransactionEntity>(TransactionEntity, {
+        ...result,
+      }).build();
 
       // .id(result.id)
       // .product_id(result.product_id)
@@ -247,10 +241,38 @@ export class TransactionMongoAdapter implements TransactionRepository {
       // .category(result.category)
       // .transaction_id(result.transaction_id)
 
-      return transactionDetailEntity;
+      return transactionEntity;
     } catch (error) {
       console.error(error);
       throw new NotFoundException('Transaction detail not found');
+    }
+  }
+
+  async findTransactionDetailsById(
+    query: FindTransactionDetailsByIdQuery,
+  ): Promise<TransactionDetailEntity> {
+    try {
+      // console.log(query.id);
+      const result = await this.prismaService.transactionDetails.findUnique({
+        include: { transaction_info: true },
+        where: {
+          id: query.id,
+        },
+      });
+
+      if (!result) {
+        throw new NotFoundException('Transaction not found');
+      }
+      const transactionDetailEntity = Builder<TransactionDetailEntity>(
+        TransactionDetailEntity,
+        {
+          ...result,
+        },
+      ).build();
+      return transactionDetailEntity;
+    } catch (error) {
+      console.error(error);
+      throw new NotFoundException('Transaction not found');
     }
   }
 

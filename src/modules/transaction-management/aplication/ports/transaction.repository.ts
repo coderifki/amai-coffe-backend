@@ -32,6 +32,9 @@ export interface CreateTransactionDetailProps {
 export interface FindTransactionByIdQuery {
   id: string;
 }
+export interface FindTransactionDetailsByIdQuery {
+  id: string;
+}
 
 export interface DeleteTransactionProps {
   id: string;
@@ -53,6 +56,10 @@ export interface TransactionRepository {
   findManyTransaction(): Promise<TransactionEntity[]>;
   findTransactionById(
     query: FindTransactionByIdQuery,
+  ): Promise<TransactionEntity>;
+
+  findTransactionDetailsById(
+    query: FindTransactionDetailsByIdQuery,
   ): Promise<TransactionDetailEntity>;
   deleteTransaction(props: DeleteTransactionProps): Promise<TransactionEntity>;
   // productAlreadyExistExeption(): Promise<TransactionEntity>;

@@ -12,19 +12,22 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Builder } from 'builder-pattern';
 import { Response } from 'express';
 import { TransactionCreateCommand } from 'src/modules/transaction-management/aplication/command/transaction/transaction.create.command';
+import { TransactionDeleteCommand } from 'src/modules/transaction-management/aplication/command/transaction/transaction.delete.command';
+import { TransactionDetailsFindByIdQuery } from 'src/modules/transaction-management/aplication/query/transaction.details.find.by.id.query';
 import { TransactionFindManyQuery } from 'src/modules/transaction-management/aplication/query/transaction.find.many.query';
+import { TransactionDetailEntity } from 'src/modules/transaction-management/domain/transaction.detail.entity';
 import { TransactionEntity } from 'src/modules/transaction-management/domain/transaction.entity';
+import { TransactionDetailsFindByIdQueryDto } from 'src/modules/transaction-management/infrastructure/dtos/query/transaction.details.find.by.id.query.dto';
+import { TransactionFindByIdQueryDto } from 'src/modules/transaction-management/infrastructure/dtos/query/transaction.find.by.id.query.dto';
 import { TransactionFindManyQueryDto } from 'src/modules/transaction-management/infrastructure/dtos/query/transaction.find.many.query';
 import { CreateTransactionDto } from 'src/modules/transaction-management/infrastructure/dtos/requests/create.transaction.dto';
+import { DeleteTransactionDto } from 'src/modules/transaction-management/infrastructure/dtos/requests/delete.transaction.dto';
 import { HasRoles } from '../../../../core/decorators/has-roles.decorator';
 import { BaseHttpResponseDto } from '../../../../core/helper/application/dtos/base.http.response.dto';
 import { baseHttpResponseHelper } from '../../../../core/helper/base.response.helper';
 import { JwtGuard } from '../../../auth/guards/jwt.auth.guard';
 import { RolesGuard } from '../../../auth/guards/roles.guard';
-import { TransactionFindByIdQueryDto } from 'src/modules/transaction-management/infrastructure/dtos/query/transaction.find.by.id.query.dto';
 import { TransactionFindByIdQuery } from 'src/modules/transaction-management/aplication/query/transaction.find.by.id.query';
-import { TransactionDeleteCommand } from 'src/modules/transaction-management/aplication/command/transaction/transaction.delete.command';
-import { DeleteTransactionDto } from 'src/modules/transaction-management/infrastructure/dtos/requests/delete.transaction.dto';
 
 @Controller('transactions')
 export class TransactionController {
@@ -170,6 +173,37 @@ export class TransactionController {
 
     const builder = Builder<TransactionFindByIdQuery>(
       TransactionFindByIdQuery,
+      {
+        ...query,
+      },
+    );
+
+    const result = await this.queryBus.execute(builder.build());
+
+    if (!result) {
+      responseBuilder.message('Transaction not found');
+      return baseHttpResponseHelper(res, responseBuilder.build());
+    }
+
+    responseBuilder.data(result);
+    return baseHttpResponseHelper(res, responseBuilder.build());
+  }
+
+  @Get('find/details') // Endpoint for finding a transaction by ID
+  async findTransactionDetailsById(
+    @Res() res: Response,
+    @Query() query: TransactionDetailsFindByIdQueryDto,
+  ) {
+    // console.log(query);
+    const responseBuilder =
+      Builder<BaseHttpResponseDto<TransactionDetailEntity, any>>(
+        BaseHttpResponseDto,
+      );
+    responseBuilder.statusCode(200);
+    responseBuilder.message('Transaction Details');
+
+    const builder = Builder<TransactionDetailsFindByIdQuery>(
+      TransactionDetailsFindByIdQuery,
       {
         ...query,
       },
