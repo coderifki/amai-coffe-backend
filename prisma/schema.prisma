@@ -97,8 +97,8 @@ model TransactionDetails {
   image            String?
   category         String 
 
-  transaction_id   String      @db.ObjectId()
-  transaction_info Transaction @relation(fields: [transaction_id], references: [id])
+  transaction_id   String?      @db.ObjectId()
+  transaction_info Transaction? @relation(fields: [transaction_id], references: [id])
 
   @@map("transaction_details")
 }

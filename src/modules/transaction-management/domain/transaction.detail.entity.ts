@@ -1,6 +1,6 @@
 export class TransactionDetailEntity {
   id: string;
-  transaction_id: string;
+  transaction_id?: string;
   product_id?: string;
   quantity: number;
   name: string;

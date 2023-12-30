@@ -64,8 +64,8 @@ Table transaction_details {
   price Float [not null]
   image String
   category String [not null]
-  transaction_id String [not null]
-  transaction_info transaction [not null]
+  transaction_id String
+  transaction_info transaction
 }
 
 Enum Role {
