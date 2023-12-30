@@ -1,9 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
-
 export class TransactionFindByIdQueryDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   id: string;
+  // transaction_id: string;
+  // product_id?: string;
+  // quantity: number;
+  // name: string;
+  // price: number;
+  // image?: string;
+  // category: string;
 }

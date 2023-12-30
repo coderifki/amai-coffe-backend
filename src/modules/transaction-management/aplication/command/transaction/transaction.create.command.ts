@@ -14,7 +14,7 @@ export class TransactionCreateCommand {
   total_transactions: number;
   payment_method_name: string;
   pay: number;
-  // transaction_details: TransactionDetails[];
+  transaction_details: TransactionDetails[];
 }
 
 @CommandHandler(TransactionCreateCommand)

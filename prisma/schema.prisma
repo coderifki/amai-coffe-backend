@@ -72,7 +72,7 @@ model Product {
 
 model Transaction {
   id                 String   @id @default(auto()) @map("_id") @db.ObjectId()
-  cashier_id         String   @unique @db.ObjectId()
+  cashier_id         String   @db.ObjectId()
   cashier_info       User     @relation(fields: [cashier_id], references: [id])
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt

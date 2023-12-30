@@ -44,7 +44,7 @@ Table product {
 
 Table transaction {
   id String [pk]
-  cashier_id String [unique, not null]
+  cashier_id String [not null]
   cashier_info user [not null]
   created_at DateTime [default: `now()`, not null]
   updated_at DateTime [not null]
@@ -57,7 +57,6 @@ Table transaction {
 
 Table transaction_details {
   id String [pk]
-  transaction_id String [not null]
   product_id String
   product_info product
   quantity Float [not null]
@@ -65,6 +64,7 @@ Table transaction_details {
   price Float [not null]
   image String
   category String [not null]
+  transaction_id String [not null]
   transaction_info transaction [not null]
 }
 
