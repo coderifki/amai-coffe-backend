@@ -79,19 +79,49 @@ export class ProductController {
   }
 
   @UseGuards(JwtGuard, RolesGuard)
-  @HasRoles('ADMIN')
+  @HasRoles('ADMIN', 'CASHIER')
   @Delete('/:id')
-  async deleteProduct(@Body() payload: DeleteProductDto) {
-    // console.log(payload);
-    const command = Builder<ProductDeleteCommand>(ProductDeleteCommand, {
-      ...payload,
-    }).build();
+  async deleteCatProduct(@Param('id') id: string) {
+    // console.log(id);
 
-    const result = await this.commandBus.execute(command);
-    if (result) {
-      return { message: 'Product deleted successfully' };
+    try {
+      const command = Builder<ProductDeleteCommand>(ProductDeleteCommand, {
+        id,
+      }).build();
+
+      const result = await this.commandBus.execute(command);
+      return result;
+    } catch (error) {
+      // console.trace(error);
+      throw error;
     }
+    // const command = Builder<CatProductDeleteCommand>(CatProductDeleteCommand, {
+    // ...payload,
+    // }).build();
+    // const result = await this.commandBus.execute(command);
+    // if (result) {
+    //   return { message: 'Product deleted successfully' };
+    // }
+
+    // const builder = Builder<CatProductFindByIdQuery>(CatProductFindByIdQuery, {
+    //   ...query,
+    // });
   }
+
+  // @UseGuards(JwtGuard, RolesGuard)
+  // @HasRoles('ADMIN', 'CASHIER')
+  // @Delete('/:id')
+  // async deleteProduct(@Body() payload: DeleteProductDto) {
+  //   // console.log(payload);
+  //   const command = Builder<ProductDeleteCommand>(ProductDeleteCommand, {
+  //     ...payload,
+  //   }).build();
+
+  //   const result = await this.commandBus.execute(command);
+  //   if (result) {
+  //     return { message: 'Product deleted successfully' };
+  //   }
+  // }
 
   // @UseGuards(JwtGuard, RolesGuard)
   // @HasRoles('ADMIN')
