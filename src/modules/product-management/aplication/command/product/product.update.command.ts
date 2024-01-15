@@ -68,12 +68,12 @@ export class ProductUpdateCommandHandler
 
         // write file
         await nestCreateFile(
-          path.join(process.cwd(), 'public/uploads'), // path
-          `products/${id + '-' + fileName}`, // file name
+          path.join(process.cwd(), `public/uploads/products/${id}`), // path
+          fileName, // file name
           image.buffer, // buffer
         );
 
-        uploadedFiles = `products/${id + '-' + fileName}`; // mark that file is uploaded
+        uploadedFiles = `products/${id}/${fileName}`; // mark that file is uploaded
         // console.log('new image', uploadedFiles);
       }
 
