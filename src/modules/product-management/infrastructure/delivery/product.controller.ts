@@ -1,36 +1,43 @@
 import {
-  Controller,
-  Post,
   BadRequestException,
   Body,
-  UseGuards,
-  Get,
-  Param,
-  Put,
+  Controller,
   Delete,
+  Get,
+  Post,
+  Put,
   Query,
   Res,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
-import { ProductCreateCommand } from '../../aplication/command/product/product.create.command';
-import { CreateProductDto } from '../dtos/requests/create.product.dto';
+import { Response } from 'express';
+import { HasRoles } from '../../../../core/decorators/has-roles.decorator';
+import { BaseHttpResponseDto } from '../../../../core/helper/application/dtos/base.http.response.dto';
+import { baseHttpResponseHelper } from '../../../../core/helper/base.response.helper';
 import { JwtGuard } from '../../../auth/guards/jwt.auth.guard';
 import { RolesGuard } from '../../../auth/guards/roles.guard';
-import { HasRoles } from '../../../../core/decorators/has-roles.decorator';
-import { ProductUpdateCommand } from '../../aplication/command/product/product.update.command';
-import { UpdateProductDto } from '../dtos/requests/update.product.dto';
+import {
+  ProductCreateCommand,
+  ProductCreateCommandResponse,
+} from '../../aplication/command/product/product.create.command';
 import { ProductDeleteCommand } from '../../aplication/command/product/product.delete.command';
-import { DeleteProductDto } from '../dtos/requests/delete.product.dto';
-import { BaseHttpResponseDto } from '../../../../core/helper/application/dtos/base.http.response.dto';
-import { ProductEntity } from '../../domain/product.entity';
-import { ProductFindManyQueryDto } from '../dtos/query/product.find.many.query';
-import { ProductFindManyQuery } from '../../aplication/query/product.find.many.query';
-import { baseHttpResponseHelper } from '../../../../core/helper/base.response.helper';
-import { Response } from 'express';
+import { ProductUpdateCommand } from '../../aplication/command/product/product.update.command';
 import { ProductFindByIdQuery } from '../../aplication/query/product.find.by.id.query';
+import { ProductFindManyQuery } from '../../aplication/query/product.find.many.query';
+import { ProductEntity } from '../../domain/product.entity';
 import { ProductFindByIdQueryDto } from '../dtos/query/product.find.by.id.query.dto';
+import { ProductFindManyQueryDto } from '../dtos/query/product.find.many.query';
+import { CreateProductDto } from '../dtos/requests/create.product.dto';
+import { DeleteProductDto } from '../dtos/requests/delete.product.dto';
+import { UpdateProductDto } from '../dtos/requests/update.product.dto';
 
+@ApiTags('Products')
 @Controller('products')
 export class ProductController {
   constructor(
@@ -38,30 +45,44 @@ export class ProductController {
     private queryBus: QueryBus,
   ) {}
 
+  @ApiOperation({ summary: 'Create Products' })
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
   @UseGuards(JwtGuard, RolesGuard)
   @HasRoles('ADMIN')
   @Post('create')
-  async createProduct(@Res() res: Response, @Body() payload: CreateProductDto) {
-    // map the incoming request into a command
-    const command = Builder<ProductCreateCommand>(ProductCreateCommand, {
-      ...payload,
-    }).build();
-    const result = await this.commandBus.execute(command);
-    // if (result) {
-    //   return { message: 'Product successfully added' };
-    // }
-    const responseBuilder = Builder<BaseHttpResponseDto<any, any>>(
-      BaseHttpResponseDto,
-      {
-        data: {
-          ...result,
+  async createProduct(
+    @Res() res: Response,
+    @Body() payload: CreateProductDto,
+    @UploadedFiles()
+    files: {
+      image?: Express.Multer.File[];
+    },
+  ) {
+    try {
+      const command = Builder<ProductCreateCommand>(ProductCreateCommand, {
+        ...payload,
+        image: files?.image[0],
+      }).build();
+
+      const { data } = await this.commandBus.execute<
+        ProductCreateCommand,
+        ProductCreateCommandResponse
+      >(command);
+
+      const responseBuilder = Builder<BaseHttpResponseDto<any, any>>(
+        BaseHttpResponseDto,
+        {
+          data,
         },
-      },
-    );
-    responseBuilder.statusCode(201);
-    responseBuilder.message('Product Successfully Added!');
-    const response = responseBuilder.build();
-    return baseHttpResponseHelper(res, response);
+      );
+      responseBuilder.statusCode(201);
+      responseBuilder.message('Product Successfully Added!');
+      const response = responseBuilder.build();
+      return baseHttpResponseHelper(res, response);
+    } catch (error) {
+      console.trace(error);
+      throw error;
+    }
   }
 
   @UseGuards(JwtGuard, RolesGuard)

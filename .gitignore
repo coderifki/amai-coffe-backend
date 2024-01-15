@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# ignore uploads
+/public/uploads
+
 # Logs
 logs
 *.log

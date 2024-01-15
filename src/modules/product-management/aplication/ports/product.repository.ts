@@ -2,10 +2,12 @@ import { ProductEntity } from '../../domain/product.entity';
 
 export const PRODUCT_REPOSITORY = 'PRODUCT_REPOSITORY';
 
-export interface CreateProductProps {
-  name?: string;
-  price?: number;
-  cat_product_id?: string;
+export class CreateProductProps {
+  id?: string; // optional for predefined id
+  name: string;
+  price: number;
+  cat_product_id: string;
+  image?: string;
 }
 export interface UpdateProductProps {
   id: string;
