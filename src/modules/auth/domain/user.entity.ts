@@ -6,7 +6,9 @@ export class UserEntity {
   phone: string;
   email: string;
   password: string;
-  role: string;
+  role: userRole;
   employee?: EmployeeEntity;
   transactions?: TransactionEntity[];
 }
+
+export type userRole = 'ADMIN' | 'CASHIER';

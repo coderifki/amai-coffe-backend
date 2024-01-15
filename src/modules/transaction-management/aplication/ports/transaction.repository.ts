@@ -5,7 +5,7 @@ import { TransactionEntity } from 'src/modules/transaction-management/domain/tra
 export const TRANSACTION_REPOSITORY = 'TRANSACTION_REPOSITORY';
 
 export interface CreateTransactionProps {
-  cashier_id: string;
+  cashier_id?: string;
   name_customer: string;
   payment_method_name: string;
   total_transactions: number;

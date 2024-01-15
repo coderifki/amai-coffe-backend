@@ -37,7 +37,7 @@ export class TransactionController {
   ) {}
 
   @UseGuards(JwtGuard, RolesGuard)
-  @HasRoles('ADMIN')
+  @HasRoles('ADMIN', 'CASHIER')
   @Post('create')
   async createTransaction(
     @Res() res: Response,

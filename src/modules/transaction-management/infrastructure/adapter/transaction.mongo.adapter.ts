@@ -144,22 +144,21 @@ export class TransactionMongoAdapter implements TransactionRepository {
   async decreaseQuantity(
     transactionId: string,
     amount: number,
-  ): Promise<TransactionEntity> {
-    const transaction = await this.prismaService.transaction.update({
+  ): Promise<TransactionDetailEntity> {
+    const transaction = await this.prismaService.transactionDetails.update({
       where: { id: transactionId },
       data: {
-        total_transactions: {
+        quantity: {
           decrement: amount,
         },
       },
-      include: { cashier_info: true }, // Sesuaikan dengan kebutuhan Anda
     });
 
     if (!transaction) {
       throw new NotFoundException('Transaction not found');
     }
 
-    const response = Builder<TransactionEntity>(TransactionEntity, {
+    const response = Builder<TransactionDetailEntity>(TransactionDetailEntity, {
       ...transaction,
     }).build();
 
