@@ -30,8 +30,9 @@ export class AppController {
       if (!path) throw new NotFoundException(`${path} not found`);
 
       // replace path, add prefix (app path)
-      const formatedPath = join(process.cwd(), `${path}`);
+      const formatedPath = join(process.cwd(), 'public/uploads', `${path}`);
 
+      // console.log(formatedPath);
       // check if path exist
       if (!existsSync(formatedPath)) {
         throw new NotFoundException(`${path} not found`);

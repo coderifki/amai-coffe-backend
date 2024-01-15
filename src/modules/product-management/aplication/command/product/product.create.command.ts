@@ -52,12 +52,12 @@ export class ProductCreateCommandHandler
 
         // write file
         await nestCreateFile(
-          path.join(process.cwd(), 'public/uploads/'), // path
-          `products/${fileName}`, // file name
+          path.join(process.cwd(), 'public/uploads'), // path
+          `products/${productId + '-' + fileName}`, // file name
           image.buffer, // buffer
         );
 
-        uploadedFiles = `products/${productId}/${fileName}`; // mark that file is uploaded
+        uploadedFiles = `products/${productId + '-' + fileName}`; // mark that file is uploaded
       }
 
       const createPayload = Builder<CreateProductProps>(CreateProductProps, {
