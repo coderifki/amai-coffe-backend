@@ -11,6 +11,7 @@ import {
   UpdateProductProps,
 } from '../../aplication/ports/product.repository';
 import { ProductEntity } from '../../domain/product.entity';
+import { ObjectId } from 'bson';
 
 @Injectable()
 export class ProductMongoAdapter implements ProductRepository {
@@ -21,9 +22,11 @@ export class ProductMongoAdapter implements ProductRepository {
     const result = await this.prismaService.product.create({
       include: { cat_product_detail: true },
       data: {
+        id: props.id || new ObjectId().toString(),
         name: props.name,
         price: props.price,
         cat_product_id: props.cat_product_id,
+        images: props.image,
       },
     });
 

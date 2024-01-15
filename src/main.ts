@@ -3,6 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
+import {
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -22,6 +27,35 @@ async function bootstrap() {
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
   app.enableCors({ origin: 'http://localhost:3004', credentials: true });
+
+  const swaggerConfig = new DocumentBuilder()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Please login, and insert your JWT token here',
+        in: 'header',
+      },
+      'JwtAuthGuard', // This name here is important for matching up with @ApiBearerAuth() in your controller!
+    )
+    .setTitle('Amai Backend')
+    .setDescription('Amai Backend API')
+    .setVersion('3.0')
+    .build();
+
+  const swaggerOptions: SwaggerDocumentOptions = {
+    operationIdFactory: (controllerKey, methodKey) => methodKey,
+  };
+
+  const document = SwaggerModule.createDocument(
+    app,
+    swaggerConfig,
+    swaggerOptions,
+  );
+
+  SwaggerModule.setup('api', app, document);
 
   // add prefix 'api' before all endpoint except the root endpoint
   app.setGlobalPrefix('api', {
