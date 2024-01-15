@@ -1,29 +1,42 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
-  IsMongoId,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
-  Max,
-  MaxLength,
   Min,
+  ValidateIf,
 } from 'class-validator';
 
 export class UpdateProductDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @IsMongoId()
   id: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString({ message: 'nama harus string' })
+  @IsNotEmpty({ message: 'string tidak boleh kosong' })
+  @ValidateIf((e) => e !== undefined)
+  name?: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber({}, {})
+  @ApiPropertyOptional()
+  @IsNotEmpty({ message: 'number tidak boleh kosong' })
+  @IsNumber({
+    allowInfinity: false,
+    allowNaN: false,
+    maxDecimalPlaces: 4,
+  })
+  @Type(() => Number) // parse form data menjadi type number (by default form data itu string)
   @Min(1)
-  price: number;
+  @ValidateIf((e) => e !== undefined)
+  price?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString() // validasi bahwa cat_product_id harus string
+  @IsNotEmpty({ message: 'category tidak boleh kosong' })
+  cat_product_id?: string;
 }

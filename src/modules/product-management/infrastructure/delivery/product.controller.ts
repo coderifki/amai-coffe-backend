@@ -86,17 +86,42 @@ export class ProductController {
     }
   }
 
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
   @UseGuards(JwtGuard, RolesGuard)
   @HasRoles('ADMIN', 'CASHIER')
-  @Put('/update')
-  async updateProduct(@Body() payload: UpdateProductDto) {
-    const command = Builder<ProductUpdateCommand>(ProductUpdateCommand, {
-      ...payload,
-    }).build();
+  @Put('update')
+  async updateProduct(
+    @Res() res: Response,
+    @Body() payload: UpdateProductDto,
+    @UploadedFiles()
+    files: {
+      image?: Express.Multer.File[];
+    },
+  ) {
+    try {
+      const command = Builder<ProductCreateCommand>(ProductCreateCommand, {
+        ...payload,
+        image: files?.image[0],
+      }).build();
 
-    const result = await this.commandBus.execute(command);
-    if (result) {
-      return { message: 'Product successfully update' };
+      const { data } = await this.commandBus.execute<
+        ProductCreateCommand,
+        ProductCreateCommandResponse
+      >(command);
+
+      const responseBuilder = Builder<BaseHttpResponseDto<any, any>>(
+        BaseHttpResponseDto,
+        {
+          data,
+        },
+      );
+      responseBuilder.statusCode(201);
+      responseBuilder.message('Product Successfully Added!');
+      const response = responseBuilder.build();
+      return baseHttpResponseHelper(res, response);
+    } catch (error) {
+      console.trace(error);
+      throw error;
     }
   }
 

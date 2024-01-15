@@ -4,7 +4,11 @@ import { Builder } from 'builder-pattern';
 import * as path from 'path';
 import { MIME_TYPE } from '../../../../../core/enums/file-mimetype.enum';
 import { generateFileName } from '../../../../../core/utils/generate.filename';
-import { nestCreateFile } from '../../../../../core/utils/nest.file.utils';
+import {
+  nestCheckFileExistance,
+  nestCreateFile,
+  nestDeleteFile,
+} from '../../../../../core/utils/nest.file.utils';
 import { ProductEntity } from '../../../domain/product.entity';
 import {
   CreateProductProps,
@@ -12,6 +16,9 @@ import {
   ProductRepository,
 } from '../../ports/product.repository';
 import { ObjectId } from 'bson';
+import { existsSync, unlinkSync } from 'fs';
+import { validateFileExtension } from '../../../../../core/utils/validate.allowed.extension';
+import { validateFileSize } from '../../../../../core/utils/validate.file.size';
 
 export class ProductCreateCommand {
   name: string;
@@ -32,16 +39,14 @@ export class ProductCreateCommandHandler
     private readonly productRepo: ProductRepository,
   ) {}
 
-  async uploadFiles(image: Express.Multer.File) {}
-
   async execute(command: ProductCreateCommand) {
     let uploadedFiles: string = '';
     try {
-      // return await this.productRepo.createProduct(command);
       // console.dir(command, { depth: null });
       const { image, ...rest } = command;
 
       const productId = new ObjectId().toString();
+
       // if image exist then upload (move file to certain path)
       if (image !== undefined) {
         // generate file name so it is unique
@@ -49,6 +54,14 @@ export class ProductCreateCommandHandler
           image.originalname,
           image.mimetype as MIME_TYPE, // cast as mime type
         );
+
+        const maxSize = 1024 * 1024 * 3; // 3 mb by default
+        validateFileExtension(
+          image,
+          [MIME_TYPE.JPEG, MIME_TYPE.JPG, MIME_TYPE.PNG],
+          image.originalname,
+        );
+        validateFileSize(image.size, maxSize, image.originalname);
 
         // write file
         await nestCreateFile(
@@ -62,6 +75,7 @@ export class ProductCreateCommandHandler
 
       const createPayload = Builder<CreateProductProps>(CreateProductProps, {
         ...rest,
+        id: productId,
         image: uploadedFiles,
       }).build();
 
@@ -73,8 +87,15 @@ export class ProductCreateCommandHandler
     } catch (error) {
       console.trace(error);
       // if something went wrong on saving to the db but the file is uploaded, delete the file
-      if (uploadedFiles) {
-        // TODO: delete file
+      if (uploadedFiles !== '') {
+        const basePath = path.join(process.cwd(), 'public/uploads');
+        const filePath = path.join(basePath, uploadedFiles);
+
+        // double check if file exist
+        if (nestCheckFileExistance(filePath)) {
+          // delete file
+          nestDeleteFile(filePath);
+        }
       }
       throw error;
     }

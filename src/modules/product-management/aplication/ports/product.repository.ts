@@ -9,10 +9,13 @@ export class CreateProductProps {
   cat_product_id: string;
   image?: string;
 }
-export interface UpdateProductProps {
-  id: string;
+
+export class UpdateProductProps {
+  id: string; // optional for predefined id
   name?: string;
   price?: number;
+  cat_product_id?: string;
+  image?: string;
 }
 
 export interface FindProductByIdQuery {

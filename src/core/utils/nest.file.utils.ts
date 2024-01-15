@@ -9,7 +9,7 @@ import { promisify } from 'util';
  *
  * @returns {boolean}
  */
-export const nestCheckIfFileOrDirectoryExists = (path: string): boolean => {
+export const nestCheckFileExistance = (path: string): boolean => {
   return fs.existsSync(path);
 };
 
@@ -27,7 +27,7 @@ export const nestCreateFile = async (
   fileName: string,
   data: string | Buffer,
 ): Promise<void> => {
-  if (!nestCheckIfFileOrDirectoryExists(path)) {
+  if (!nestCheckFileExistance(path)) {
     fs.mkdirSync(path);
   }
 
