@@ -28,7 +28,10 @@ import {
   ProductCreateCommandResponse,
 } from '../../aplication/command/product/product.create.command';
 import { ProductDeleteCommand } from '../../aplication/command/product/product.delete.command';
-import { ProductUpdateCommand } from '../../aplication/command/product/product.update.command';
+import {
+  ProductUpdateCommand,
+  ProductUpdateCommandResponse,
+} from '../../aplication/command/product/product.update.command';
 import { ProductFindByIdQuery } from '../../aplication/query/product.find.by.id.query';
 import { ProductFindManyQuery } from '../../aplication/query/product.find.many.query';
 import { ProductEntity } from '../../domain/product.entity';
@@ -62,7 +65,7 @@ export class ProductController {
     try {
       const command = Builder<ProductCreateCommand>(ProductCreateCommand, {
         ...payload,
-        image: files?.image[0],
+        image: files.image ? files.image[0] : undefined,
       }).build();
 
       const { data } = await this.commandBus.execute<
@@ -99,14 +102,14 @@ export class ProductController {
     },
   ) {
     try {
-      const command = Builder<ProductCreateCommand>(ProductCreateCommand, {
+      const command = Builder<ProductUpdateCommand>(ProductUpdateCommand, {
         ...payload,
-        image: files?.image[0],
+        image: files.image ? files.image[0] : undefined,
       }).build();
 
       const { data } = await this.commandBus.execute<
-        ProductCreateCommand,
-        ProductCreateCommandResponse
+        ProductUpdateCommand,
+        ProductUpdateCommandResponse
       >(command);
 
       const responseBuilder = Builder<BaseHttpResponseDto<any, any>>(
@@ -116,7 +119,7 @@ export class ProductController {
         },
       );
       responseBuilder.statusCode(201);
-      responseBuilder.message('Product Successfully Added!');
+      responseBuilder.message('Product Successfully Updated!');
       const response = responseBuilder.build();
       return baseHttpResponseHelper(res, response);
     } catch (error) {

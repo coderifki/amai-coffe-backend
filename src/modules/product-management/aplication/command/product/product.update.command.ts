@@ -1,23 +1,23 @@
+import { NotFoundException } from '@nestjs/common';
 import { Inject } from '@nestjs/common/decorators';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import {
-  ProductRepository,
-  PRODUCT_REPOSITORY,
-  CreateProductProps,
-  UpdateProductProps,
-} from '../../ports/product.repository';
 import { Builder } from 'builder-pattern';
-import path from 'path';
+import * as path from 'path';
+import { ProductEntity } from 'src/modules/product-management/domain/product.entity';
 import { MIME_TYPE } from '../../../../../core/enums/file-mimetype.enum';
 import { generateFileName } from '../../../../../core/utils/generate.filename';
 import {
-  nestCreateFile,
   nestCheckFileExistance,
+  nestCreateFile,
   nestDeleteFile,
 } from '../../../../../core/utils/nest.file.utils';
-import { NotFoundException } from '@nestjs/common';
 import { validateFileExtension } from '../../../../../core/utils/validate.allowed.extension';
 import { validateFileSize } from '../../../../../core/utils/validate.file.size';
+import {
+  PRODUCT_REPOSITORY,
+  ProductRepository,
+  UpdateProductProps,
+} from '../../ports/product.repository';
 
 export class ProductUpdateCommand {
   id: string;
@@ -27,9 +27,14 @@ export class ProductUpdateCommand {
   image?: Express.Multer.File;
 }
 
+export class ProductUpdateCommandResponse {
+  data: ProductEntity;
+}
+
 @CommandHandler(ProductUpdateCommand)
 export class ProductUpdateCommandHandler
-  implements ICommandHandler<ProductUpdateCommand>
+  implements
+    ICommandHandler<ProductUpdateCommand, ProductUpdateCommandResponse>
 {
   constructor(
     @Inject(PRODUCT_REPOSITORY)
@@ -43,6 +48,7 @@ export class ProductUpdateCommandHandler
 
       const oldProduct = await this.productRepo.findProductById({ id });
       if (!oldProduct) throw new NotFoundException('Product not found!');
+      // console.log('old image', oldProduct.images);
 
       // if new image exist then upload (move file to certain path)
       if (image !== undefined) {
@@ -68,6 +74,7 @@ export class ProductUpdateCommandHandler
         );
 
         uploadedFiles = `products/${id + '-' + fileName}`; // mark that file is uploaded
+        // console.log('new image', uploadedFiles);
       }
 
       const updatePayload = Builder<UpdateProductProps>(UpdateProductProps, {
@@ -78,8 +85,8 @@ export class ProductUpdateCommandHandler
 
       const product = await this.productRepo.updateProduct(updatePayload);
 
-      // when updating is successful, delete old image
-      if (product) {
+      // when updating is successful, and theres new image, delete old image
+      if (product && image) {
         // if old product has image
         if (oldProduct.images) {
           const basePath = path.join(process.cwd(), 'public/uploads');
