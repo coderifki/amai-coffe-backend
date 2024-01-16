@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
@@ -6,15 +7,21 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { TransactionDetails } from '@prisma/client';
-import { TransactionDetailEntity } from 'src/modules/transaction-management/domain/transaction.detail.entity';
+
+export class TransactionDetailsDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  product_id: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  qty: number;
+}
 
 export class CreateTransactionDto {
-  @ApiProperty()
-  @IsString({ message: 'ID Kasir harus berupa string' })
-  cashier_id: string;
-
   @ApiProperty()
   @IsString({ message: 'Nama harus berupa string' })
   @IsNotEmpty({ message: 'Nama tidak boleh kosong' })
@@ -37,8 +44,8 @@ export class CreateTransactionDto {
   @IsNotEmpty({ message: 'Nama metode pembayaran tidak boleh kosong' })
   payment_method_name: string;
 
-  @ApiProperty({ type: [TransactionDetailEntity] })
+  @ApiProperty()
   @ValidateNested({ each: true })
-  @Type(() => TransactionDetailEntity)
-  transaction_details: TransactionDetails[];
+  @Type(() => TransactionDetailsDto)
+  transaction_details: TransactionDetailsDto[];
 }

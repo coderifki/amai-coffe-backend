@@ -88,23 +88,29 @@ export class ProductMongoAdapter implements ProductRepository {
     return response;
   }
 
-  async findProductById(query: FindProductByIdQuery): Promise<ProductEntity> {
-    // console.log(query.id);
-    const result = await this.prismaService.product.findUnique({
-      include: { cat_product_detail: true },
-      where: {
-        id: query.id,
-      },
-    });
+  async findProductById(
+    query: FindProductByIdQuery,
+    tx: PrismaService,
+  ): Promise<ProductEntity | null> {
+    const prisma = tx || this.prismaService;
+    try {
+      const result = await prisma.product.findUnique({
+        include: { cat_product_detail: true },
+        where: {
+          id: query.id,
+        },
+      });
 
-    if (!result) {
-      throw new NotFoundException('Product not found');
+      if (!result) return null;
+
+      const productEntity = Builder<ProductEntity>(ProductEntity, {
+        ...result,
+      }).build();
+
+      return productEntity;
+    } catch (error) {
+      throw error;
     }
-    const productEntity = Builder<ProductEntity>(ProductEntity, {
-      ...result,
-    }).build();
-
-    return productEntity;
   }
 
   async deleteProduct(props: DeleteProductProps): Promise<ProductEntity> {

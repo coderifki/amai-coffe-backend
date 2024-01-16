@@ -27,8 +27,9 @@ const queryHandlers = [
 ];
 
 @Module({
+  imports: [CqrsModule],
   controllers: [ProductController],
   providers: [...handlers, ...repositories, ...queryHandlers],
-  imports: [CqrsModule],
+  exports: [...repositories],
 })
 export class ProductModule {}

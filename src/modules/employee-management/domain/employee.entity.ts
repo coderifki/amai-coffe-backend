@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { RoleEntity } from '../../auth/domain/role.entitty';
-import { TransactionEntity } from '../../transaction-management/domain/transaction.entity';
+import { TransactionEntity } from '../../transaction-management/transactions/domain/transaction.entity';
 
 export class EmployeeEntity {
   id: string;

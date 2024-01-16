@@ -27,6 +27,6 @@ export class TransactionDetailsFindByIdQueryHandler
 
   async execute(query: TransactionDetailsFindByIdQuery) {
     // console.log(query);
-    return await this.transactionRepository.findTransactionDetailsById(query);
+    // return await this.transactionRepository.findTransactionDetailsById(query);
   }
 }

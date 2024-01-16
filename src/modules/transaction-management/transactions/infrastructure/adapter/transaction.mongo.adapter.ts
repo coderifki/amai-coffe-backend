@@ -6,94 +6,32 @@ import {
   CreateTransactionProps,
   DeleteTransactionProps,
   FindTransactionByIdQuery,
-  FindTransactionDetailsByIdQuery,
+  TransactionFindFirstQuery,
+  TransactionRelations,
   TransactionRepository,
-} from 'src/modules/transaction-management/aplication/ports/transaction.repository';
-import { TransactionDetailEntity } from 'src/modules/transaction-management/domain/transaction.detail.entity';
-import { TransactionEntity } from 'src/modules/transaction-management/domain/transaction.entity';
-import { PrismaService } from '../../../../shared/prisma/prisma.service';
+} from 'src/modules/transaction-management/transactions/aplication/ports/transaction.repository';
+import { TransactionDetailEntity } from 'src/modules/transaction-management/transactions/domain/transaction.detail.entity';
+import { TransactionEntity } from 'src/modules/transaction-management/transactions/domain/transaction.entity';
+import { PrismaService } from '../../../../../shared/prisma/prisma.service';
+import { ObjectId } from 'bson';
 
 @Injectable()
 export class TransactionMongoAdapter implements TransactionRepository {
   constructor(private prismaService: PrismaService) {}
 
-  // async createTransactionWithDetails(
-  //   transactionProps: CreateTransactionProps,
-  //   detailProps: CreateTransactionDetailProps,
-  // ): Promise<TransactionDetailEntity | TransactionEntity> {
-  //   try {
-  //     // Create the transaction
-  //     const transaction = await this.prismaService.transaction.create({
-  //       include: { cashier_info: true },
-  //       data: {
-  //         cashier_id: transactionProps.cashier_id,
-  //         name_customer: transactionProps.name_customer,
-  //         total_transactions: transactionProps.total_transactions,
-  //         pay: transactionProps.pay,
-  //         payment_method_name: transactionProps.payment_method_name,
-  //       },
-  //     });
-
-  //     if (!transaction) {
-  //       throw new Error('Failed to create transaction');
-  //     }
-
-  //     // Create the transaction detail associated with the transaction
-  //     const detail = await this.prismaService.transactionDetails.create({
-  //       data: {
-  //         // You may need to adjust these based on your data structure
-  //         product_id: detailProps.product_id,
-  //         quantity: detailProps.quantity,
-  //         name: detailProps.name,
-  //         price: detailProps.price,
-  //         image: detailProps.image,
-  //         category: detailProps.category,
-  //         transaction_id: transaction.id, // Assign the transaction id to the detail
-  //       },
-  //     });
-
-  //     if (!detail) {
-  //       throw new Error('Failed to create transaction detail');
-  //     }
-
-  //     // Return the created transaction and detail
-  //     return { transaction, detail };
-  //   } catch (error) {
-  //     throw new Error(
-  //       `Failed to create transaction and detail: ${error.message}`,
-  //     );
-  //   }
-  // }
-
-  async createTransaction(
-    props: CreateTransactionProps,
-  ): Promise<TransactionEntity> {
+  async create(props: CreateTransactionProps): Promise<TransactionEntity> {
     try {
       const result = await this.prismaService.transaction.create({
-        include: { transaction_details: true, cashier_info: true },
         data: {
+          id: props.id || new ObjectId().toString(),
           cashier_id: props.cashier_id,
           name_customer: props.name_customer,
           total_transactions: props.total_transactions,
           pay: props.pay,
           payment_method_name: props.payment_method_name,
-          transaction_details: {
-            create: props.transaction_details.map((detail) => ({
-              // transaction_id: detail.transaction_id,
-              product_id: detail.product_id,
-              quantity: detail.quantity,
-              name: detail.name,
-              price: detail.price,
-              image: detail.image,
-              category: detail.category,
-            })),
-          },
         },
       });
 
-      if (!result) {
-        throw new ConflictException('Id had to be created');
-      }
       const response = Builder<TransactionEntity>(TransactionEntity, {
         ...result,
       }).build();
@@ -101,14 +39,50 @@ export class TransactionMongoAdapter implements TransactionRepository {
       return response;
     } catch (e) {
       console.log(e);
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        if (e.code === 'P2002') {
-          // throw new transactionAlreadyExistException();
-        }
-      }
       throw e;
     }
   }
+
+  applyInclude(relations: TransactionRelations[]) {
+    const inludes: Prisma.TransactionInclude = {};
+    for (const relation of relations) {
+      if (relation === 'transaction_details') {
+        inludes.transaction_details = true;
+      }
+      if (relation === 'cashier_info') {
+        inludes.cashier_info = true;
+      }
+    }
+    return inludes;
+  }
+
+  findFirstFilter(props: TransactionFindFirstQuery) {
+    const args: Prisma.TransactionFindFirstArgs = {};
+    const whereClause: Prisma.TransactionWhereInput = {};
+    if (props.transaction_id) whereClause.id = props.transaction_id;
+    if (props.include_relations) {
+      args.include = this.applyInclude(props.include_relations);
+    }
+    args.where = whereClause;
+    return args;
+  }
+
+  async findFirst(
+    props: TransactionFindFirstQuery,
+    session?: PrismaService,
+  ): Promise<TransactionEntity> {
+    const prisma = session || this.prismaService;
+    try {
+      const args = this.findFirstFilter(props);
+      const res = await prisma.transaction.findFirst(args);
+
+      return Builder<TransactionEntity>(TransactionEntity, res).build();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findMany() {}
 
   // Fungsi untuk menambahkan jumlah transaksi
   async increaseQuantity(
@@ -247,33 +221,33 @@ export class TransactionMongoAdapter implements TransactionRepository {
     }
   }
 
-  async findTransactionDetailsById(
-    query: FindTransactionDetailsByIdQuery,
-  ): Promise<TransactionDetailEntity> {
-    try {
-      // console.log(query.id);
-      const result = await this.prismaService.transactionDetails.findUnique({
-        include: { transaction_info: true },
-        where: {
-          id: query.id,
-        },
-      });
+  // async findTransactionDetailsById(
+  //   query: FindTransactionDetailsByIdQuery,
+  // ): Promise<TransactionDetailEntity> {
+  //   try {
+  //     const result = await this.prismaService.transactionDetails.findUnique({
+  //       include: { transaction_info: true },
+  //       where: {
+  //         id: query.id,
+  //       },
+  //     });
 
-      if (!result) {
-        throw new NotFoundException('Transaction not found');
-      }
-      const transactionDetailEntity = Builder<TransactionDetailEntity>(
-        TransactionDetailEntity,
-        {
-          ...result,
-        },
-      ).build();
-      return transactionDetailEntity;
-    } catch (error) {
-      console.error(error);
-      throw new NotFoundException('Transaction not found');
-    }
-  }
+  //     if (!result) {
+  //       throw new NotFoundException('Transaction not found');
+  //     }
+
+  //     const transactionDetailEntity = Builder<TransactionDetailEntity>(
+  //       TransactionDetailEntity,
+  //       {
+  //         ...result,
+  //       },
+  //     ).build();
+  //     return transactionDetailEntity;
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw new NotFoundException('Transaction not found');
+  //   }
+  // }
 
   async deleteTransaction(
     props: DeleteTransactionProps,

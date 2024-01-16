@@ -36,7 +36,10 @@ export interface ProductRepository {
   createProduct(props: CreateProductProps): Promise<ProductEntity>;
   updateProduct(props: UpdateProductProps): Promise<ProductEntity>;
   findManyProduct(): Promise<ProductEntity[]>;
-  findProductById(query: FindProductByIdQuery): Promise<ProductEntity>;
+  findProductById(
+    query: FindProductByIdQuery,
+    tx?: any,
+  ): Promise<ProductEntity | null>;
   deleteProduct(props: DeleteProductProps): Promise<ProductEntity>;
   // productAlreadyExistExeption(): Promise<ProductEntity>;
 }

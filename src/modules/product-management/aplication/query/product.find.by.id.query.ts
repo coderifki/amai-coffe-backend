@@ -4,7 +4,7 @@ import {
   PRODUCT_REPOSITORY,
   ProductRepository,
 } from '../ports/product.repository';
-import { Inject } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 
 export class ProductFindByIdQuery {
   id: string;
@@ -21,6 +21,8 @@ export class ProductFindByIdQueryHandler
 
   async execute(query: ProductFindByIdQuery) {
     // console.log(query);
-    return await this.productRepository.findProductById(query);
+    const product = await this.productRepository.findProductById(query);
+    if (!product) throw new NotFoundException('Product not found!');
+    return product;
   }
 }

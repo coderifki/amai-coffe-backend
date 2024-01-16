@@ -80,8 +80,6 @@ model Transaction {
   payment_method_name String
   total_transactions Float
   pay                Float
-//   change             Float
-
   transaction_details TransactionDetails[]
 
   @@map("transaction")
@@ -91,14 +89,14 @@ model TransactionDetails {
   id               String      @id @default(auto()) @map("_id") @db.ObjectId()
   product_id       String?     @db.ObjectId()
   product_info     Product?    @relation(fields: [product_id], references: [id])
-  quantity         Float
+  quantity         Int
   name             String
   price            Float
   image            String?
   category         String 
 
-  transaction_id   String?      @db.ObjectId()
-  transaction_info Transaction? @relation(fields: [transaction_id], references: [id])
+  transaction_id   String      @db.ObjectId()
+  transaction_info Transaction @relation(fields: [transaction_id], references: [id])
 
   @@map("transaction_details")
 }
